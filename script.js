@@ -1,9 +1,11 @@
+// console.log("TEST-1");
 //.......................................................................
 //.......................................................................
 //GLOBAL DEFINITIONS
 const BLACKOUT_SECTION = 50;
 const BLACKOUT_STANDARD = 150;
-const RESET_TO_FEATURES_MAIN = 100;
+const BLACKOUT_RESET_FEATURES = 500;
+const PAUSE_FEATURE_END = 1000;
 const allNavLinks = document.querySelectorAll(".nav_menu_link");
 const blackout = document.querySelector(".blackout");
 const sectionFeatures = document.querySelector(".section_features");
@@ -15,16 +17,26 @@ const allSectionBtnWrappers = document.querySelectorAll(".section-wrap-btns");
 // const allButtons = document.querySelectorAll(".ctrl-btn");
 let activeSection = document.querySelector(".section_features");
 let activeSectionName = activeSection.classList[0].slice(8);
+let ctrlBtnIndex;
 // let activeSection;
 // let activeSectionName;
 //.......................................................................
 //.......................................................................
 //FEATURES DEFINITIONS
 const allVidsFeatures = sectionFeatures.querySelectorAll(".vid");
-const allVidsFeaturesMobileP =
-  sectionFeatures.querySelectorAll(".vid.mobile-p");
-
-const allSectionVidsFeatures = [...allVidsFeatures, ...allVidsFeaturesMobileP];
+// const allVidsFeaturesMobileP =
+//   sectionFeatures.querySelectorAll(".vid.mobile-p");
+// const allSectionVidsFeatures = [...allVidsFeatures, ...allVidsFeaturesMobileP];
+//.......................................................................
+//.......................................................................
+//COMPONENTS DEFINITIONS
+const allVidsComponents = sectionComponents.querySelectorAll(".vid");
+// const allVidsComponentsMobileP =
+//   sectionComponents.querySelectorAll(".vid.mobile-p");
+// const allSectionVidsComponents = [
+//   ...allVidsComponents,
+//   ...allVidsComponentsMobileP,
+// ];
 //.......................................................................
 //.......................................................................
 //GLOBAL FUNCTIONS
@@ -61,19 +73,22 @@ const FlashBlackout = function (timerVariable) {
     blackout.classList.add("off");
   }, timerVariable);
 };
-const DeactivateSectionImages = function (sectionName) {
-  if (!sectionName) {
-    activeSection.querySelectorAll(".section-img").forEach(function (el) {
-      el.classList.remove("active");
-    });
-  } else {
-    document
-      .querySelector(`.section_${sectionName}`)
-      .querySelectorAll(".section-img")
-      .forEach(function (el) {
-        el.classList.remove("active");
-      });
-  }
+const ActivateDeactivateSectionText = function (textName) {
+  activeSection.querySelectorAll(".section-wrap-text").forEach(function (el) {
+    el.classList.remove("active");
+    if (textName && el.classList.contains(textName)) el.classList.add("active");
+  });
+};
+const ActivateDeactivateSectionImage = function (imgName, imgIndex) {
+  activeSection.querySelectorAll(".section-wrap-imgs").forEach(function (el) {
+    el.classList.remove("active");
+    if (imgName && el.classList.contains(imgName)) {
+      el.classList.add("active");
+      if (imgIndex) {
+        el.querySelectorAll(".section-img")[imgIndex].classList.add("active");
+      }
+    }
+  });
 };
 const DeactivateSectionVideos = function (sectionName) {
   if (!sectionName) {
@@ -83,7 +98,7 @@ const DeactivateSectionVideos = function (sectionName) {
   } else {
     document
       .querySelector(`.section_${sectionName}`)
-      .querySelectorAll(".video-wrapper")
+      .querySelectorAll(".video-wrap")
       .forEach(function (el) {
         el.classList.remove("active");
       });
@@ -110,35 +125,27 @@ const ResetSectionVideos = function (sectionName) {
       });
   }
 };
-const ActivateSectionImage = function (imgName) {
-  activeSection
-    .querySelector(`.section-wrap-imgs.${imgName}`)
-    .querySelectorAll(".section-img")
-    .forEach(function (el) {
-      el.classList.add("active");
-    });
-};
-const ActivateSectionVideo = function (vidName, vidIndex) {
+const ActivateSectionVideo = function (vidName) {
   DeactivateSectionVideos();
   activeSection
     .querySelector(`.section-wrap-vids.${vidName}`)
     .querySelectorAll(".video-wrap")
-    [vidIndex].classList.add("active");
+    [ctrlBtnIndex].classList.add("active");
   activeSection
     .querySelector(`.section-wrap-vids.${vidName}`)
     .querySelectorAll(".video-wrap.mobile-p")
-    [vidIndex].classList.add("active");
+    [ctrlBtnIndex].classList.add("active");
 };
-const PlaySectionVideo = function (vidName, vidIndex) {
+const PlaySectionVideo = function (vidName) {
   activeSection
     .querySelector(`.section-wrap-vids.${vidName}`)
     .querySelectorAll(".video-wrap")
-    [vidIndex].querySelector(".vid")
+    [ctrlBtnIndex].querySelector(".vid")
     .play();
   activeSection
     .querySelector(`.section-wrap-vids.${vidName}`)
     .querySelectorAll(".video-wrap.mobile-p")
-    [vidIndex].querySelector(".vid.mobile-p")
+    [ctrlBtnIndex].querySelector(".vid-mobile-p")
     .play();
 };
 const ActivateSectionButtons = function () {
@@ -159,45 +166,49 @@ const ActivateSectionButtons = function () {
 //FEATURES SECTION
 allVidsFeatures.forEach(function (el) {
   el.addEventListener("ended", function () {
-    ResetToMainScreen();
+    ResetToFeaturesMainScreen();
   });
 });
 ctrlBtnWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn.features");
   if (!clicked) return;
   const parentElement = clicked.parentElement;
-  const clickedIndex = Array.prototype.indexOf.call(
-    parentElement.children,
-    clicked
-  );
+  ctrlBtnIndex = Array.prototype.indexOf.call(parentElement.children, clicked);
   FlashBlackout(BLACKOUT_STANDARD);
-  DeactivateSectionImages();
+  ActivateDeactivateSectionText();
+  ActivateDeactivateSectionImage();
   ResetSectionVideos();
-  ActivateSectionVideo("features", clickedIndex);
-  PlaySectionVideo("features", clickedIndex);
+  ActivateSectionVideo("features");
+  PlaySectionVideo("features");
 });
-const ResetToMainScreen = function () {
+const ResetToFeaturesMainScreen = function () {
   setTimeout(function () {
     DeactivateSectionVideos();
-    ActivateSectionImage("main");
-  }, RESET_TO_FEATURES_MAIN);
+    ActivateDeactivateSectionText("main");
+    ActivateDeactivateSectionImage("main");
+  }, PAUSE_FEATURE_END);
 };
 //.......................................................................
 //.......................................................................
 //COMPONENTS SECTION
+allVidsComponents.forEach(function (el) {
+  el.addEventListener("ended", function () {
+    DisplayDataSheet();
+  });
+});
 ctrlBtnWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn.components");
   if (!clicked) return;
   const parentElement = clicked.parentElement;
-  const clickedIndex = Array.prototype.indexOf.call(
-    parentElement.children,
-    clicked
-  );
-  // console.log("sectionName: " + sectionName);
-  // console.log("clickedIndex: " + clickedIndex);
+  ctrlBtnIndex = Array.prototype.indexOf.call(parentElement.children, clicked);
   FlashBlackout(BLACKOUT_STANDARD);
-  DeactivateSectionImages();
+  ActivateDeactivateSectionText();
+  ActivateDeactivateSectionImage();
   ResetSectionVideos();
-  ActivateSectionVideo("components", clickedIndex);
-  PlaySectionVideo("datasheets", clickedIndex);
+  ActivateSectionVideo("datasheets");
+  PlaySectionVideo("datasheets");
 });
+
+const DisplayDataSheet = function () {
+  ActivateDeactivateSectionImage("comps", ctrlBtnIndex);
+};
