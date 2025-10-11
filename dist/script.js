@@ -26,13 +26,17 @@
   var ctrlBtnWrapperComponents = ctrlBtnWrapper.querySelector(
     ".section-wrap-btns.components"
   );
-  var viewBtn = document.querySelector(".view-btn");
+  var viewBtn = sectionComponents.querySelector(".view-btn");
+  var dimmer = sectionComponents.querySelector(".dimmer");
+  var textImgBtn = sectionComponents.querySelector(".text-img-btn");
   var allCtrlBtnsComponents = ctrlBtnWrapper.querySelectorAll(
     ".ctrl-btn.components"
   );
   var datasheetBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.datasheets");
   var oldViewBtnName = "assemble";
   var viewBtnName = "explode";
+  var textImgBtnLabel = "image";
+  var activeDatasheet;
   allNavLinks.forEach(function(el) {
     el.addEventListener("click", function(e) {
       const clicked = e.target.closest(".nav_menu_link");
@@ -87,9 +91,9 @@
     });
   };
   var FlashBlackout = function(timerVariable) {
-    blackout.classList.remove("off");
+    blackout.classList.add("active");
     setTimeout(function() {
-      blackout.classList.add("off");
+      blackout.classList.remove("active");
     }, timerVariable);
   };
   var DeactivateActivateSectionText = function(textName, textIndex) {
@@ -243,6 +247,12 @@
     PlaySectionVideo(viewBtnName);
     ctrlBtnWrapperComponents.classList.remove("active");
   });
+  textImgBtn.addEventListener("click", function() {
+    textImgBtnLabel === "image" ? textImgBtn.textContent = "text" : textImgBtn.textContent = "image";
+    textImgBtnLabel = textImgBtn.textContent;
+    activeDatasheet.querySelector(".comp-data-body-wrap").classList.toggle("active");
+    dimmer.classList.toggle("active");
+  });
   ctrlBtnWrapper.addEventListener("click", function(e) {
     const clicked = e.target.closest(".ctrl-btn.components");
     if (!clicked) return;
@@ -260,20 +270,27 @@
     if (!clicked) return;
     ResetSectionVideos("components", "datasheets");
     DeactivateActivateSectionImage(oldViewBtnName);
-    ActivateDeactivateDatasheetTextAndButton(false);
+    dimmer.classList.remove("active");
+    ActivateDeactivateDatasheetTextAndButtons(false);
     DeactivateActivateSectionText("main");
     ActivateSection();
     ActivateSectionButtons();
   });
   var DisplayDataSheet = function() {
     DeactivateActivateSectionImage("comps", ctrlBtnIndex);
-    ActivateDeactivateDatasheetTextAndButton(true);
+    dimmer.classList.add("active");
+    ActivateDeactivateDatasheetTextAndButtons(true);
   };
-  var ActivateDeactivateDatasheetTextAndButton = function(activeDeactivate) {
+  var ActivateDeactivateDatasheetTextAndButtons = function(activeDeactivate) {
+    textImgBtn.classList.toggle("active", activeDeactivate);
     datasheetsAllWrapper.classList.toggle("active", activeDeactivate);
     allDatasheetWraps.forEach(function(el, index) {
       el.classList.remove("active");
-      if (activeDeactivate && index === ctrlBtnIndex) el.classList.add("active");
+      el.querySelector(".comp-data-body-wrap").classList.add("active");
+      if (activeDeactivate && index === ctrlBtnIndex) {
+        el.classList.add("active");
+        activeDatasheet = el;
+      }
     });
     datasheetBtn.classList.toggle("active", activeDeactivate);
   };

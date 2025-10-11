@@ -39,13 +39,17 @@ const allDatasheetWraps = sectionComponents.querySelectorAll(".comp-data-wrap");
 const ctrlBtnWrapperComponents = ctrlBtnWrapper.querySelector(
   ".section-wrap-btns.components"
 );
-const viewBtn = document.querySelector(".view-btn");
+const viewBtn = sectionComponents.querySelector(".view-btn");
+const dimmer = sectionComponents.querySelector(".dimmer");
+const textImgBtn = sectionComponents.querySelector(".text-img-btn");
 const allCtrlBtnsComponents = ctrlBtnWrapper.querySelectorAll(
   ".ctrl-btn.components"
 );
 const datasheetBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.datasheets");
 let oldViewBtnName = "assemble";
 let viewBtnName = "explode";
+let textImgBtnLabel = "image";
+let activeDatasheet;
 //.......................................................................
 //.......................................................................
 //GLOBAL FUNCTIONS
@@ -103,9 +107,9 @@ const ActivateSection = function () {
   });
 };
 const FlashBlackout = function (timerVariable) {
-  blackout.classList.remove("off");
+  blackout.classList.add("active");
   setTimeout(function () {
-    blackout.classList.add("off");
+    blackout.classList.remove("active");
   }, timerVariable);
 };
 const DeactivateActivateSectionText = function (textName, textIndex) {
@@ -310,6 +314,16 @@ viewBtn.addEventListener("click", function (e) {
   PlaySectionVideo(viewBtnName);
   ctrlBtnWrapperComponents.classList.remove("active");
 });
+textImgBtn.addEventListener("click", function () {
+  textImgBtnLabel === "image"
+    ? (textImgBtn.textContent = "text")
+    : (textImgBtn.textContent = "image");
+  textImgBtnLabel = textImgBtn.textContent;
+  activeDatasheet
+    .querySelector(".comp-data-body-wrap")
+    .classList.toggle("active");
+  dimmer.classList.toggle("active");
+});
 ctrlBtnWrapper.addEventListener("click", function (e) {
   const clicked = e.target.closest(".ctrl-btn.components");
   if (!clicked) return;
@@ -327,21 +341,27 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   if (!clicked) return;
   ResetSectionVideos("components", "datasheets");
   DeactivateActivateSectionImage(oldViewBtnName);
-  ActivateDeactivateDatasheetTextAndButton(false);
+  dimmer.classList.remove("active");
+  ActivateDeactivateDatasheetTextAndButtons(false);
   DeactivateActivateSectionText("main");
   ActivateSection();
   ActivateSectionButtons();
 });
-
 const DisplayDataSheet = function () {
   DeactivateActivateSectionImage("comps", ctrlBtnIndex);
-  ActivateDeactivateDatasheetTextAndButton(true);
+  dimmer.classList.add("active");
+  ActivateDeactivateDatasheetTextAndButtons(true);
 };
-const ActivateDeactivateDatasheetTextAndButton = function (activeDeactivate) {
+const ActivateDeactivateDatasheetTextAndButtons = function (activeDeactivate) {
+  textImgBtn.classList.toggle("active", activeDeactivate);
   datasheetsAllWrapper.classList.toggle("active", activeDeactivate);
   allDatasheetWraps.forEach(function (el, index) {
     el.classList.remove("active");
-    if (activeDeactivate && index === ctrlBtnIndex) el.classList.add("active");
+    el.querySelector(".comp-data-body-wrap").classList.add("active");
+    if (activeDeactivate && index === ctrlBtnIndex) {
+      el.classList.add("active");
+      activeDatasheet = el;
+    }
   });
   datasheetBtn.classList.toggle("active", activeDeactivate);
 };
