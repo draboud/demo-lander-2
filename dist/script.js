@@ -75,6 +75,7 @@
           endIndex = 5;
         }
         dimmer.classList.remove("active");
+        textImgBtnLabel = "image";
         ActivateDeactivateCtrlBtnRange(true, "components", startIndex, endIndex);
         ActivateDeactivateCtrlBtnRange(false, "components", startIndex, endIndex);
         break;
