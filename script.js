@@ -2,32 +2,48 @@
 //.......................................................................
 //.......................................................................
 //GLOBAL DEFINITIONS
-const BLACKOUT_SECTION = 50;
-const BLACKOUT_STANDARD = 150;
-const BLACKOUT_RESET_FEATURES = 500;
+const BLACKOUT_STANDARD = 50;
+const BLACKOUT_INIT = 2500;
 const PAUSE_FEATURE_END = 1000;
+const NO_OF_INSTRUCTION_VIDS = 4;
+const PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
+const INSTRUCTION_VIDS_LOOPING = true;
+const navBar = document.querySelector(".nav_fixed");
+const navLinkFeatures = document.querySelector(".nav_menu_link.features");
+const navLinkComponents = document.querySelector(".nav_menu_link.components");
+const navLinkInstructions = document.querySelector(
+  ".nav_menu_link.instructions"
+);
 const allNavLinks = document.querySelectorAll(".nav_menu_link");
+const loader = document.querySelector(".loader-text");
 const blackout = document.querySelector(".blackout");
 const sectionFeatures = document.querySelector(".section_features");
 const sectionComponents = document.querySelector(".section_components");
 const sectionInstructions = document.querySelector(".section_instructions");
 const allSections = [sectionFeatures, sectionComponents, sectionInstructions];
 const ctrlBtnWrapper = document.querySelector(".ctrl-btn-wrapper");
+const allCtrlBtns = document.querySelectorAll(".ctrl-btn");
 const allSectionBtnWrappers = document.querySelectorAll(".section-wrap-btns");
+let initializing = true;
 let activeSection = document.querySelector(".section_features");
 let activeSectionName = activeSection.classList[0].slice(8);
 let ctrlBtnIndex;
-
 //.......................................................................
 //.......................................................................
 //FEATURES DEFINITIONS
 const allVidsFeatures = sectionFeatures.querySelectorAll(".vid");
+const allCtrlBtnsFeatures =
+  ctrlBtnWrapper.querySelectorAll(".ctrl-btn.features");
 //.......................................................................
 //.......................................................................
 //COMPONENTS DEFINITIONS
 const allVidsComponentViews = [
-  document.querySelector(".section-wrap-vids.explode").querySelector(".vid"),
-  document.querySelector(".section-wrap-vids.assemble").querySelector(".vid"),
+  sectionComponents
+    .querySelector(".section-wrap-vids.explode")
+    .querySelector(".vid"),
+  sectionComponents
+    .querySelector(".section-wrap-vids.assemble")
+    .querySelector(".vid"),
 ];
 const allVidsComponentDatasheets = sectionComponents
   .querySelector(".section-wrap-vids.datasheets")
@@ -52,7 +68,51 @@ let textImgBtnLabel = "image";
 let activeDatasheet;
 //.......................................................................
 //.......................................................................
+//INSTRUCTIONS DEFINITIONS
+const allVidsInstructions = sectionInstructions.querySelectorAll(".vid");
+const allCtrlBtnsInstructions = sectionInstructions.querySelectorAll(
+  ".ctrl-btn.instructions"
+);
+let currentInstructionVid;
+let instructionVidTimer;
+//.......................................................................
+//.......................................................................
+//INITIALIZE
+const init = function () {
+  blackout.classList.remove("off");
+  loader.classList.add("active");
+  navBar.style.display = "none";
+  ctrlBtnWrapper.classList.remove("active");
+  // allNavLinks.forEach(function (el) {
+  //   el.click();
+  // });
+};
+init();
+window.addEventListener("load", function () {
+  navLinkComponents.click();
+  navLinkComponents.click();
+  navLinkFeatures.click();
+  this.setTimeout(function () {
+    navBar.style.display = "block";
+    ctrlBtnWrapper.classList.add("active");
+    initializing = false;
+    loader.classList.remove("active");
+    blackout.classList.add("off");
+  }, BLACKOUT_INIT);
+});
+//.......................................................................
+//.......................................................................
 //GLOBAL FUNCTIONS
+allCtrlBtns.forEach(function (el) {
+  el.addEventListener("mouseenter", function () {
+    el.classList.add("hovered");
+  });
+});
+allCtrlBtns.forEach(function (el) {
+  el.addEventListener("mouseleave", function () {
+    el.classList.remove("hovered");
+  });
+});
 allNavLinks.forEach(function (el) {
   el.addEventListener("click", function (e) {
     const clicked = e.target.closest(".nav_menu_link");
@@ -76,6 +136,8 @@ const ActivateNavLink = function () {
 const ResetSectionSpecial = function () {
   switch (activeSectionName) {
     case "features":
+      DeactivateActivateSectionImage("main");
+      DeactivateActivateCurrentCtrlButtons("features");
       break;
     case "components":
       DeactivateActivateSectionImage(oldViewBtnName);
@@ -91,28 +153,48 @@ const ResetSectionSpecial = function () {
         endIndex = 5;
       }
       dimmer.classList.remove("active");
+      textImgBtn.textContent = "image";
       textImgBtnLabel = "image";
-      ActivateDeactivateCtrlBtnRange(true, "components", startIndex, endIndex);
-      ActivateDeactivateCtrlBtnRange(false, "components", startIndex, endIndex);
+      DeactivateActivateCtrlBtnRange(true, "components", startIndex, endIndex);
+      DeactivateActivateCtrlBtnRange(false, "components", startIndex, endIndex);
       break;
     case "instructions":
+      clearTimeout(instructionVidTimer);
+      instructionVidTimer = null;
+      DeactivateActivateSectionImage("main");
+      DeactivateActivateCurrentCtrlButtons("instructions");
       break;
   }
 };
-const ActivateSection = function () {
-  allSections.forEach(function (el) {
-    el.classList.remove("active");
-    if (el.classList[0].slice(8) === activeSectionName) {
-      el.classList.add("active");
-      FlashBlackout(BLACKOUT_SECTION);
-    }
-  });
-};
-const FlashBlackout = function (timerVariable) {
-  blackout.classList.add("active");
-  setTimeout(function () {
-    blackout.classList.remove("active");
-  }, timerVariable);
+const ResetSectionVideos = function (sectionName, subsectionName) {
+  if (sectionName === "all") {
+    document.querySelectorAll(`.vid,.vid-mobile-p`).forEach(function (el) {
+      el.currentTime = 0;
+      el.pause();
+    });
+  } else if (!sectionName) {
+    activeSection.querySelectorAll(`.vid,.vid-mobile-p`).forEach(function (el) {
+      el.currentTime = 0;
+      el.pause();
+    });
+  } else if (sectionName && !subsectionName) {
+    document
+      .querySelector(`.section_${sectionName}`)
+      .querySelectorAll(`.vid,.vid-mobile-p`)
+      .forEach(function (el) {
+        el.currentTime = 0;
+        el.pause();
+      });
+  } else {
+    document
+      .querySelector(`.section_${sectionName}`)
+      .querySelector(`.section-wrap-vids.${subsectionName}`)
+      .querySelectorAll(`.vid,.vid-mobile-p`)
+      .forEach(function (el) {
+        el.currentTime = 0;
+        el.pause();
+      });
+  }
 };
 const DeactivateActivateSectionText = function (textName, textIndex) {
   activeSection.querySelectorAll(".section-wrap-text").forEach(function (el) {
@@ -127,6 +209,30 @@ const DeactivateActivateSectionText = function (textName, textIndex) {
       }
     }
   });
+};
+const ActivateSection = function () {
+  allSections.forEach(function (el) {
+    el.classList.remove("active");
+    if (el.classList[0].slice(8) === activeSectionName) {
+      el.classList.add("active");
+      if (!initializing) FlashBlackout(BLACKOUT_STANDARD);
+    }
+  });
+};
+const ActivateSectionButtons = function () {
+  allSectionBtnWrappers.forEach(function (el) {
+    el.classList.remove("active");
+  });
+  ctrlBtnWrapper
+    .querySelector(`.section-wrap-btns.${activeSectionName}`)
+    .classList.add("active");
+  datasheetBtn.classList.remove("active");
+};
+const FlashBlackout = function (timerVariable) {
+  blackout.classList.remove("off");
+  setTimeout(function () {
+    blackout.classList.add("off");
+  }, timerVariable);
 };
 const DeactivateActivateSectionImage = function (imgName, imgIndex) {
   activeSection.querySelectorAll(".section-wrap-imgs").forEach(function (el) {
@@ -163,36 +269,6 @@ const DeactivateSectionVideos = function (sectionName) {
       });
   }
 };
-const ResetSectionVideos = function (sectionName, subsectionName) {
-  if (sectionName === "all") {
-    document.querySelectorAll(`.vid,.vid-mobile-p`).forEach(function (el) {
-      el.currentTime = 0;
-      el.pause();
-    });
-  } else if (!sectionName) {
-    activeSection.querySelectorAll(`.vid,.vid-mobile-p`).forEach(function (el) {
-      el.currentTime = 0;
-      el.pause();
-    });
-  } else if (sectionName && !subsectionName) {
-    document
-      .querySelector(`.section_${sectionName}`)
-      .querySelectorAll(`.vid,.vid-mobile-p`)
-      .forEach(function (el) {
-        el.currentTime = 0;
-        el.pause();
-      });
-  } else {
-    document
-      .querySelector(`.section_${sectionName}`)
-      .querySelector(`.section-wrap-vids.${subsectionName}`)
-      .querySelectorAll(`.vid,.vid-mobile-p`)
-      .forEach(function (el) {
-        el.currentTime = 0;
-        el.pause();
-      });
-  }
-};
 const ActivateSectionVideo = function (vidName, vidIndex) {
   DeactivateSectionVideos();
   if (!vidIndex) vidIndex = 0;
@@ -218,16 +294,16 @@ const PlaySectionVideo = function (vidName, vidIndex) {
     [vidIndex].querySelector(".vid-mobile-p")
     .play();
 };
-const ActivateSectionButtons = function () {
-  allSectionBtnWrappers.forEach(function (el) {
-    el.classList.remove("active");
-  });
-  ctrlBtnWrapper
-    .querySelector(`.section-wrap-btns.${activeSectionName}`)
-    .classList.add("active");
-  datasheetBtn.classList.remove("active");
+const DeactivateActivateCurrentCtrlButtons = function (sectionName, btnIndex) {
+  document
+    .querySelectorAll(`.ctrl-btn.${sectionName}`)
+    .forEach(function (el, index) {
+      el.classList.remove("current", "hovered");
+      if ((btnIndex || btnIndex === 0) && index === btnIndex)
+        el.classList.add("current");
+    });
 };
-const ActivateDeactivateCtrlBtnRange = function (
+const DeactivateActivateCtrlBtnRange = function (
   activeDeactivate,
   btnsName,
   startIndex,
@@ -241,10 +317,6 @@ const ActivateDeactivateCtrlBtnRange = function (
         el.classList.toggle("active", activeDeactivate);
     });
 };
-//.......................................................................
-//.......................................................................
-//CONSTRUCTION ZONE
-
 //.......................................................................
 //.......................................................................
 //FEATURES SECTION
@@ -263,12 +335,15 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   DeactivateActivateSectionImage();
   ResetSectionVideos();
   PlaySectionVideo("features", ctrlBtnIndex);
+  DeactivateActivateCurrentCtrlButtons("features", ctrlBtnIndex);
 });
 const ResetToFeaturesMainScreen = function () {
   setTimeout(function () {
+    FlashBlackout(50);
     DeactivateSectionVideos();
     DeactivateActivateSectionText("main");
     DeactivateActivateSectionImage("main");
+    DeactivateActivateCurrentCtrlButtons("features", false);
   }, PAUSE_FEATURE_END);
 };
 //.......................................................................
@@ -302,7 +377,7 @@ allVidsComponentViews.forEach(function (el) {
       .forEach(function (el) {
         el.classList.remove("active");
       });
-    ActivateDeactivateCtrlBtnRange(true, "components", startRange, endRange);
+    DeactivateActivateCtrlBtnRange(true, "components", startRange, endRange);
     ctrlBtnWrapperComponents.classList.add("active");
   });
 });
@@ -366,4 +441,60 @@ const ActivateDeactivateDatasheetTextAndButtons = function (activeDeactivate) {
     }
   });
   datasheetBtn.classList.toggle("active", activeDeactivate);
+};
+//.......................................................................
+//.......................................................................
+//INSTRUCTIONS SECTION
+allVidsInstructions.forEach(function (el) {
+  el.addEventListener("ended", function () {
+    instructionVidTimer = setTimeout(function () {
+      currentInstructionVid += 1;
+      if (
+        currentInstructionVid === NO_OF_INSTRUCTION_VIDS &&
+        INSTRUCTION_VIDS_LOOPING
+      ) {
+        currentInstructionVid = 0;
+      } else if (
+        currentInstructionVid === NO_OF_INSTRUCTION_VIDS &&
+        !INSTRUCTION_VIDS_LOOPING
+      ) {
+        ResetToInstructionsMainScreen();
+        return;
+      }
+      ResetSectionVideos();
+      ActivateSectionVideo("instructions", currentInstructionVid);
+      PlaySectionVideo("instructions", currentInstructionVid);
+      DeactivateActivateCurrentCtrlButtons(
+        "instructions",
+        currentInstructionVid
+      );
+    }, PAUSE_BETWEEN_INSTRUCTION_VIDS);
+  });
+});
+ctrlBtnWrapper.addEventListener("click", function (e) {
+  const clicked = e.target.closest(".ctrl-btn.instructions");
+  if (!clicked) return;
+  const parentElement = clicked.parentElement;
+  currentInstructionVid = Array.prototype.indexOf.call(
+    parentElement.children,
+    clicked
+  );
+  // currentInstructionVid =
+  //   Array.from(allCtrlBtnsInstructions).indexOf(clicked) + 1; //why is this always '0'?
+  FlashBlackout(BLACKOUT_STANDARD);
+  clearTimeout(instructionVidTimer);
+  instructionVidTimer = null;
+  ResetSectionVideos();
+  ActivateSectionVideo("instructions", currentInstructionVid);
+  DeactivateActivateSectionText();
+  DeactivateActivateSectionImage();
+  PlaySectionVideo("instructions", currentInstructionVid);
+  DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
+});
+const ResetToInstructionsMainScreen = function () {
+  FlashBlackout(BLACKOUT_STANDARD);
+  DeactivateSectionVideos();
+  DeactivateActivateSectionText("main");
+  DeactivateActivateSectionImage("main");
+  DeactivateActivateCurrentCtrlButtons("instructions", false);
 };
