@@ -84,9 +84,6 @@ const init = function () {
   loader.classList.add("active");
   navBar.style.display = "none";
   ctrlBtnWrapper.classList.remove("active");
-  // allNavLinks.forEach(function (el) {
-  //   el.click();
-  // });
 };
 init();
 window.addEventListener("load", function () {
