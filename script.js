@@ -4,7 +4,8 @@
 //GLOBAL DEFINITIONS
 const BLACKOUT_STANDARD = 50;
 const BLACKOUT_INIT = 2500;
-const PAUSE_FEATURE_END = 1000;
+const DELAY_BEFORE_FEATURE_TEXT = 1000;
+const PAUSE_AFTER_FEATURE_END = 650;
 const NO_OF_INSTRUCTION_VIDS = 4;
 const PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
 const INSTRUCTION_VIDS_LOOPING = true;
@@ -331,11 +332,14 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   const parentElement = clicked.parentElement;
   ctrlBtnIndex = Array.prototype.indexOf.call(parentElement.children, clicked);
   ActivateSectionVideo("features", ctrlBtnIndex);
-  DeactivateActivateSectionText("feature", ctrlBtnIndex);
+  DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
   ResetSectionVideos();
   PlaySectionVideo("features", ctrlBtnIndex);
   DeactivateActivateCurrentCtrlButtons("features", ctrlBtnIndex);
+  setTimeout(function () {
+    DeactivateActivateSectionText("feature", ctrlBtnIndex);
+  }, DELAY_BEFORE_FEATURE_TEXT);
 });
 const ResetToFeaturesMainScreen = function () {
   setTimeout(function () {
@@ -344,7 +348,7 @@ const ResetToFeaturesMainScreen = function () {
     DeactivateActivateSectionText("main");
     DeactivateActivateSectionImage("main");
     DeactivateActivateCurrentCtrlButtons("features", false);
-  }, PAUSE_FEATURE_END);
+  }, PAUSE_AFTER_FEATURE_END);
 };
 //.......................................................................
 //.......................................................................

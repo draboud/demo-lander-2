@@ -2,7 +2,8 @@
   // script.js
   var BLACKOUT_STANDARD = 50;
   var BLACKOUT_INIT = 2500;
-  var PAUSE_FEATURE_END = 1e3;
+  var DELAY_BEFORE_FEATURE_TEXT = 1e3;
+  var PAUSE_AFTER_FEATURE_END = 650;
   var NO_OF_INSTRUCTION_VIDS = 4;
   var PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
   var INSTRUCTION_VIDS_LOOPING = true;
@@ -262,11 +263,14 @@
     const parentElement = clicked.parentElement;
     ctrlBtnIndex = Array.prototype.indexOf.call(parentElement.children, clicked);
     ActivateSectionVideo("features", ctrlBtnIndex);
-    DeactivateActivateSectionText("feature", ctrlBtnIndex);
+    DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
     ResetSectionVideos();
     PlaySectionVideo("features", ctrlBtnIndex);
     DeactivateActivateCurrentCtrlButtons("features", ctrlBtnIndex);
+    setTimeout(function() {
+      DeactivateActivateSectionText("feature", ctrlBtnIndex);
+    }, DELAY_BEFORE_FEATURE_TEXT);
   });
   var ResetToFeaturesMainScreen = function() {
     setTimeout(function() {
@@ -275,7 +279,7 @@
       DeactivateActivateSectionText("main");
       DeactivateActivateSectionImage("main");
       DeactivateActivateCurrentCtrlButtons("features", false);
-    }, PAUSE_FEATURE_END);
+    }, PAUSE_AFTER_FEATURE_END);
   };
   allVidsComponentDatasheets.forEach(function(el) {
     el.addEventListener("ended", function() {
