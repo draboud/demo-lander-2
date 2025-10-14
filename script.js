@@ -476,9 +476,9 @@ allVidsInstructions.forEach(function (el) {
         ResetToInstructionsMainScreen();
         return;
       }
-      FlashBlackout(BLACKOUT_STANDARD);
-      ResetSectionVideos();
+      FlashBlackout(BLACKOUT_EXTRA);
       ActivateSectionVideo("instructions", currentInstructionVid);
+      ResetSectionVideos();
       PlaySectionVideo("instructions", currentInstructionVid);
       DeactivateActivateCurrentCtrlButtons(
         "instructions",
