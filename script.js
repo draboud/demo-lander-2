@@ -9,6 +9,10 @@ const PAUSE_AFTER_FEATURE_END = 650;
 const NO_OF_INSTRUCTION_VIDS = 4;
 const PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
 const INSTRUCTION_VIDS_LOOPING = true;
+const COMP_BTNS_START_RANGE_A = 0;
+const COMP_BTNS_END_RANGE_A = 5;
+const COMP_BTNS_START_RANGE_B = 6;
+const COMP_BTNS_END_RANGE_B = 11;
 const navBar = document.querySelector(".nav_fixed");
 const navLinkFeatures = document.querySelector(".nav_menu_link.features");
 const navLinkComponents = document.querySelector(".nav_menu_link.components");
@@ -64,9 +68,6 @@ const allCtrlBtnsComponents = ctrlBtnWrapper.querySelectorAll(
   ".ctrl-btn.components"
 );
 const backBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.back");
-// let oldOptsMenuBtnName = "view-a";
-// let optsMenuBtnName = "view-b";
-// let formerViewName = "view-a";
 let currentViewName = "view-a";
 let textImgBtnLabel = "image";
 let activeDatasheet;
@@ -144,16 +145,15 @@ const ResetSectionSpecial = function () {
       break;
     case "components":
       DeactivateActivateSectionImage(currentViewName);
-      // optsMenuBtn.textContent = currentViewName;
       [datasheetsAllWrapper, ...allDatasheetWraps].forEach(function (el) {
         el.classList.remove("active");
       });
       if (currentViewName === "view-a") {
-        startIndex = 0; //where the heck are these index variables defined?
-        endIndex = 5;
+        startIndex = COMP_BTNS_START_RANGE_A; //where the heck is startIndex and endIndex defined?
+        endIndex = COMP_BTNS_END_RANGE_A;
       } else {
-        startIndex = 6;
-        endIndex = 11;
+        startIndex = COMP_BTNS_START_RANGE_B;
+        endIndex = COMP_BTNS_END_RANGE_B;
       }
       dimmer.classList.remove("active");
       textImgBtn.textContent = "image";
@@ -344,7 +344,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
 });
 const ResetToFeaturesMainScreen = function () {
   setTimeout(function () {
-    FlashBlackout(50);
+    FlashBlackout(BLACKOUT_STANDARD);
     ActivateSectionVideo("main");
     DeactivateActivateSectionText();
     setTimeout(function () {

@@ -7,6 +7,10 @@
   var NO_OF_INSTRUCTION_VIDS = 4;
   var PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
   var INSTRUCTION_VIDS_LOOPING = true;
+  var COMP_BTNS_START_RANGE_A = 0;
+  var COMP_BTNS_END_RANGE_A = 5;
+  var COMP_BTNS_START_RANGE_B = 6;
+  var COMP_BTNS_END_RANGE_B = 11;
   var navBar = document.querySelector(".nav_fixed");
   var navLinkFeatures = document.querySelector(".nav_menu_link.features");
   var navLinkComponents = document.querySelector(".nav_menu_link.components");
@@ -121,11 +125,11 @@
           el.classList.remove("active");
         });
         if (currentViewName === "view-a") {
-          startIndex = 0;
-          endIndex = 5;
+          startIndex = COMP_BTNS_START_RANGE_A;
+          endIndex = COMP_BTNS_END_RANGE_A;
         } else {
-          startIndex = 6;
-          endIndex = 11;
+          startIndex = COMP_BTNS_START_RANGE_B;
+          endIndex = COMP_BTNS_END_RANGE_B;
         }
         dimmer.classList.remove("active");
         textImgBtn.textContent = "image";
@@ -275,7 +279,7 @@
   });
   var ResetToFeaturesMainScreen = function() {
     setTimeout(function() {
-      FlashBlackout(50);
+      FlashBlackout(BLACKOUT_STANDARD);
       ActivateSectionVideo("main");
       DeactivateActivateSectionText();
       setTimeout(function() {
