@@ -476,7 +476,7 @@ allVidsInstructions.forEach(function (el) {
         ResetToInstructionsMainScreen();
         return;
       }
-      FlashBlackout(BLACKOUT_EXTRA);
+      // FlashBlackout(BLACKOUT_EXTRA);
       ActivateSectionVideo("instructions", currentInstructionVid);
       // ResetSectionVideos();
       PlaySectionVideo("instructions", currentInstructionVid);
@@ -497,10 +497,10 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   );
   // currentInstructionVid =
   //   Array.from(allCtrlBtnsInstructions).indexOf(clicked) + 1; //why is this always '0'?
-  FlashBlackout(BLACKOUT_EXTRA);
+  // FlashBlackout(BLACKOUT_EXTRA);
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
-  ResetSectionVideos();
+  // ResetSectionVideos();
   ActivateSectionVideo("instructions", currentInstructionVid);
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();

@@ -389,7 +389,6 @@
           ResetToInstructionsMainScreen();
           return;
         }
-        FlashBlackout(BLACKOUT_EXTRA);
         ActivateSectionVideo("instructions", currentInstructionVid);
         PlaySectionVideo("instructions", currentInstructionVid);
         DeactivateActivateCurrentCtrlButtons(
@@ -407,10 +406,8 @@
       parentElement.children,
       clicked
     );
-    FlashBlackout(BLACKOUT_EXTRA);
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
-    ResetSectionVideos();
     ActivateSectionVideo("instructions", currentInstructionVid);
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
