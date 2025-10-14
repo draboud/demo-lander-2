@@ -388,6 +388,7 @@
           ResetToInstructionsMainScreen();
           return;
         }
+        FlashBlackout(BLACKOUT_STANDARD);
         ResetSectionVideos();
         ActivateSectionVideo("instructions", currentInstructionVid);
         PlaySectionVideo("instructions", currentInstructionVid);
