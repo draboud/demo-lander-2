@@ -93,9 +93,6 @@ const init = function () {
 init();
 window.addEventListener("load", function () {
   navLinkInstructions.click();
-  allCtrlBtnsInstructions.forEach(function (el) {
-    el.ended();
-  });
   navLinkComponents.click();
   navLinkFeatures.click();
   this.setTimeout(function () {
@@ -104,10 +101,6 @@ window.addEventListener("load", function () {
     initializing = false;
     loader.classList.remove("active");
     blackout.classList.add("off");
-    // this.document
-    //   .querySelector(".section-wrap-btns.features")
-    //   .querySelectorAll(".ctrl-btn.features")[0]
-    //   .click();
   }, BLACKOUT_INIT);
 });
 //.......................................................................
@@ -480,6 +473,7 @@ allVidsInstructions.forEach(function (el) {
         return;
       }
       ActivateSectionVideo("instructions", currentInstructionVid);
+      FlashBlackout(BLACKOUT_STANDARD);
       PlaySectionVideo("instructions", currentInstructionVid);
       DeactivateActivateCurrentCtrlButtons(
         "instructions",
@@ -501,6 +495,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   // FlashBlackout(BLACKOUT_EXTRA);
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
+  FlashBlackout(BLACKOUT_STANDARD);
   ResetSectionVideos();
   ActivateSectionVideo("instructions", currentInstructionVid);
   DeactivateActivateSectionText();
@@ -509,7 +504,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 });
 const ResetToInstructionsMainScreen = function () {
-  FlashBlackout(BLACKOUT_EXTRA);
+  FlashBlackout(BLACKOUT_STANDARD);
   DeactivateSectionVideos();
   DeactivateActivateSectionText("main");
   DeactivateActivateSectionImage("main");

@@ -1,7 +1,6 @@
 (() => {
   // script.js
   var BLACKOUT_STANDARD = 50;
-  var BLACKOUT_EXTRA = 400;
   var BLACKOUT_INIT = 2500;
   var DELAY_BEFORE_FEATURE_TEXT = 1e3;
   var PAUSE_AFTER_FEATURE_END = 650;
@@ -72,9 +71,6 @@
   init();
   window.addEventListener("load", function() {
     navLinkInstructions.click();
-    allCtrlBtnsInstructions.forEach(function(el) {
-      el.ended();
-    });
     navLinkComponents.click();
     navLinkFeatures.click();
     this.setTimeout(function() {
@@ -393,6 +389,7 @@
           return;
         }
         ActivateSectionVideo("instructions", currentInstructionVid);
+        FlashBlackout(BLACKOUT_STANDARD);
         PlaySectionVideo("instructions", currentInstructionVid);
         DeactivateActivateCurrentCtrlButtons(
           "instructions",
@@ -411,6 +408,7 @@
     );
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
+    FlashBlackout(BLACKOUT_STANDARD);
     ResetSectionVideos();
     ActivateSectionVideo("instructions", currentInstructionVid);
     DeactivateActivateSectionText();
@@ -419,7 +417,7 @@
     DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
   });
   var ResetToInstructionsMainScreen = function() {
-    FlashBlackout(BLACKOUT_EXTRA);
+    FlashBlackout(BLACKOUT_STANDARD);
     DeactivateSectionVideos();
     DeactivateActivateSectionText("main");
     DeactivateActivateSectionImage("main");
