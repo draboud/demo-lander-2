@@ -3,7 +3,7 @@
 //.......................................................................
 //GLOBAL DEFINITIONS
 const BLACKOUT_STANDARD = 50;
-const BLACKOUT_EXTRA = 150;
+const BLACKOUT_EXTRA = 400;
 const BLACKOUT_INIT = 2500;
 const DELAY_BEFORE_FEATURE_TEXT = 1000;
 const PAUSE_AFTER_FEATURE_END = 650;
