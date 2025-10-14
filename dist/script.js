@@ -1,6 +1,7 @@
 (() => {
   // script.js
   var BLACKOUT_STANDARD = 50;
+  var BLACKOUT_EXTRA = 250;
   var BLACKOUT_INIT = 2500;
   var DELAY_BEFORE_FEATURE_TEXT = 1e3;
   var PAUSE_AFTER_FEATURE_END = 650;
@@ -389,6 +390,7 @@
           return;
         }
         ActivateSectionVideo("instructions", currentInstructionVid);
+        ResetSectionVideos();
         FlashBlackout(BLACKOUT_STANDARD);
         PlaySectionVideo("instructions", currentInstructionVid);
         DeactivateActivateCurrentCtrlButtons(
@@ -408,7 +410,7 @@
     );
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
-    FlashBlackout(BLACKOUT_STANDARD);
+    FlashBlackout(BLACKOUT_EXTRA);
     ActivateSectionVideo("instructions", currentInstructionVid);
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
@@ -416,7 +418,7 @@
     DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
   });
   var ResetToInstructionsMainScreen = function() {
-    FlashBlackout(BLACKOUT_STANDARD);
+    FlashBlackout(BLACKOUT_EXTRA);
     DeactivateSectionVideos();
     DeactivateActivateSectionText("main");
     DeactivateActivateSectionImage("main");

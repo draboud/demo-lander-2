@@ -473,6 +473,7 @@ allVidsInstructions.forEach(function (el) {
         return;
       }
       ActivateSectionVideo("instructions", currentInstructionVid);
+      ResetSectionVideos();
       FlashBlackout(BLACKOUT_STANDARD);
       PlaySectionVideo("instructions", currentInstructionVid);
       DeactivateActivateCurrentCtrlButtons(
@@ -495,7 +496,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   // FlashBlackout(BLACKOUT_EXTRA);
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
-  FlashBlackout(BLACKOUT_STANDARD);
+  FlashBlackout(BLACKOUT_EXTRA);
   ActivateSectionVideo("instructions", currentInstructionVid);
   // ResetSectionVideos();
   DeactivateActivateSectionText();
@@ -504,7 +505,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 });
 const ResetToInstructionsMainScreen = function () {
-  FlashBlackout(BLACKOUT_STANDARD);
+  FlashBlackout(BLACKOUT_EXTRA);
   DeactivateSectionVideos();
   DeactivateActivateSectionText("main");
   DeactivateActivateSectionImage("main");
