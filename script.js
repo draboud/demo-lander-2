@@ -1,4 +1,4 @@
-// console.log("TEST-3");
+// console.log("TEST");
 //.......................................................................
 //.......................................................................
 //GLOBAL DEFINITIONS
@@ -100,6 +100,10 @@ window.addEventListener("load", function () {
     initializing = false;
     loader.classList.remove("active");
     blackout.classList.add("off");
+    this.document
+      .querySelector(".section-wrap-btns.features")
+      .querySelectorAll(".ctrl-btn.features")[0]
+      .click();
   }, BLACKOUT_INIT);
 });
 //.......................................................................
@@ -139,11 +143,12 @@ const ActivateNavLink = function () {
 const ResetSectionSpecial = function () {
   switch (activeSectionName) {
     case "features":
-      DeactivateActivateSectionImage();
-      ActivateSectionVideo("main");
+      DeactivateActivateSectionImage("main");
+      // ActivateSectionVideo("main");
       DeactivateActivateCurrentCtrlButtons("features");
       break;
     case "components":
+      optsMenu.classList.remove("active");
       DeactivateActivateSectionImage(currentViewName);
       [datasheetsAllWrapper, ...allDatasheetWraps].forEach(function (el) {
         el.classList.remove("active");
@@ -332,10 +337,10 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   const parentElement = clicked.parentElement;
   ctrlBtnIndex = Array.prototype.indexOf.call(parentElement.children, clicked);
   FlashBlackout(BLACKOUT_STANDARD);
-  ActivateSectionVideo("features", ctrlBtnIndex);
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
   ResetSectionVideos();
+  ActivateSectionVideo("features", ctrlBtnIndex);
   PlaySectionVideo("features", ctrlBtnIndex);
   DeactivateActivateCurrentCtrlButtons("features", ctrlBtnIndex);
   setTimeout(function () {
@@ -345,12 +350,9 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
 const ResetToFeaturesMainScreen = function () {
   setTimeout(function () {
     FlashBlackout(BLACKOUT_STANDARD);
-    ActivateSectionVideo("main");
+    DeactivateActivateSectionImage("main");
     DeactivateActivateSectionText();
-    setTimeout(function () {
-      DeactivateActivateSectionText("main");
-    }, DELAY_BEFORE_FEATURE_TEXT);
-    PlaySectionVideo("main");
+    DeactivateActivateSectionText("main");
     DeactivateActivateCurrentCtrlButtons("features", false);
   }, PAUSE_AFTER_FEATURE_END);
 };
