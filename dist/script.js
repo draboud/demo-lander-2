@@ -73,7 +73,7 @@
   window.addEventListener("load", function() {
     navLinkInstructions.click();
     allCtrlBtnsInstructions.forEach(function(el) {
-      el.click();
+      el.ended();
     });
     navLinkComponents.click();
     navLinkFeatures.click();
