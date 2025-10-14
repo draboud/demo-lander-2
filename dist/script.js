@@ -30,8 +30,8 @@
   var allVidsFeatures = sectionFeatures.querySelectorAll(".vid");
   var allCtrlBtnsFeatures = ctrlBtnWrapper.querySelectorAll(".ctrl-btn.features");
   var allVidsComponentViews = [
-    sectionComponents.querySelector(".section-wrap-vids.explode").querySelector(".vid"),
-    sectionComponents.querySelector(".section-wrap-vids.assemble").querySelector(".vid")
+    sectionComponents.querySelector(".section-wrap-vids.view-a").querySelector(".vid"),
+    sectionComponents.querySelector(".section-wrap-vids.view-b").querySelector(".vid")
   ];
   var allVidsComponentDatasheets = sectionComponents.querySelector(".section-wrap-vids.datasheets").querySelectorAll(".vid");
   var datasheetsAllWrapper = sectionComponents.querySelector(
@@ -41,15 +41,15 @@
   var ctrlBtnWrapperComponents = ctrlBtnWrapper.querySelector(
     ".section-wrap-btns.components"
   );
-  var viewBtn = sectionComponents.querySelector(".view-btn");
+  var optsMenuBtn = sectionComponents.querySelector(".opts-menu_btn");
+  var optsMenu = sectionComponents.querySelector(".opts-menu");
   var dimmer = sectionComponents.querySelector(".dimmer");
   var textImgBtn = sectionComponents.querySelector(".text-img-btn");
   var allCtrlBtnsComponents = ctrlBtnWrapper.querySelectorAll(
     ".ctrl-btn.components"
   );
-  var datasheetBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.datasheets");
-  var oldViewBtnName = "assemble";
-  var viewBtnName = "explode";
+  var backBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.back");
+  var currentViewName = "view-a";
   var textImgBtnLabel = "image";
   var activeDatasheet;
   var allVidsInstructions = sectionInstructions.querySelectorAll(".vid");
@@ -66,7 +66,7 @@
   };
   init();
   window.addEventListener("load", function() {
-    navLinkComponents.click();
+    navLinkInstructions.click();
     navLinkComponents.click();
     navLinkFeatures.click();
     this.setTimeout(function() {
@@ -99,6 +99,7 @@
       DeactivateActivateSectionText("main");
       ActivateSection();
       ActivateSectionButtons();
+      if (activeSectionName === "features") PlaySectionVideo("main");
     });
   });
   var ActivateNavLink = function() {
@@ -110,27 +111,26 @@
   var ResetSectionSpecial = function() {
     switch (activeSectionName) {
       case "features":
-        DeactivateActivateSectionImage("main");
+        DeactivateActivateSectionImage();
+        ActivateSectionVideo("main");
         DeactivateActivateCurrentCtrlButtons("features");
         break;
       case "components":
-        DeactivateActivateSectionImage(oldViewBtnName);
-        viewBtn.textContent = viewBtnName;
+        DeactivateActivateSectionImage(currentViewName);
         [datasheetsAllWrapper, ...allDatasheetWraps].forEach(function(el) {
           el.classList.remove("active");
         });
-        if (oldViewBtnName === "assemble") {
-          startIndex = 6;
-          endIndex = 11;
-        } else {
+        if (currentViewName === "view-a") {
           startIndex = 0;
           endIndex = 5;
+        } else {
+          startIndex = 6;
+          endIndex = 11;
         }
         dimmer.classList.remove("active");
         textImgBtn.textContent = "image";
         textImgBtnLabel = "image";
-        DeactivateActivateCtrlBtnRange(true, "components", startIndex, endIndex);
-        DeactivateActivateCtrlBtnRange(false, "components", startIndex, endIndex);
+        DeactivateActivateCtrlBtnRange("components", startIndex, endIndex);
         break;
       case "instructions":
         clearTimeout(instructionVidTimer);
@@ -191,7 +191,7 @@
       el.classList.remove("active");
     });
     ctrlBtnWrapper.querySelector(`.section-wrap-btns.${activeSectionName}`).classList.add("active");
-    datasheetBtn.classList.remove("active");
+    backBtn.classList.remove("active");
   };
   var FlashBlackout = function(timerVariable) {
     blackout.classList.remove("off");
@@ -246,10 +246,10 @@
         el.classList.add("current");
     });
   };
-  var DeactivateActivateCtrlBtnRange = function(activeDeactivate, btnsName, startIndex2, endIndex2) {
+  var DeactivateActivateCtrlBtnRange = function(btnsName, startIndex2, endIndex2) {
     ctrlBtnWrapper.querySelector(`.section-wrap-btns.${btnsName}`).querySelectorAll(".ctrl-btn").forEach(function(el, index) {
-      if (index >= startIndex2 && index <= endIndex2)
-        el.classList.toggle("active", activeDeactivate);
+      el.classList.remove("active");
+      if (index >= startIndex2 && index <= endIndex2) el.classList.add("active");
     });
   };
   allVidsFeatures.forEach(function(el) {
@@ -262,6 +262,7 @@
     if (!clicked) return;
     const parentElement = clicked.parentElement;
     ctrlBtnIndex = Array.prototype.indexOf.call(parentElement.children, clicked);
+    FlashBlackout(BLACKOUT_STANDARD);
     ActivateSectionVideo("features", ctrlBtnIndex);
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
@@ -275,9 +276,12 @@
   var ResetToFeaturesMainScreen = function() {
     setTimeout(function() {
       FlashBlackout(50);
-      DeactivateSectionVideos();
-      DeactivateActivateSectionText("main");
-      DeactivateActivateSectionImage("main");
+      ActivateSectionVideo("main");
+      DeactivateActivateSectionText();
+      setTimeout(function() {
+        DeactivateActivateSectionText("main");
+      }, DELAY_BEFORE_FEATURE_TEXT);
+      PlaySectionVideo("main");
       DeactivateActivateCurrentCtrlButtons("features", false);
     }, PAUSE_AFTER_FEATURE_END);
   };
@@ -288,36 +292,42 @@
   });
   allVidsComponentViews.forEach(function(el) {
     el.addEventListener("ended", function() {
-      oldViewBtnName = viewBtnName;
-      viewBtnName === "explode" ? viewBtnName = "assemble" : viewBtnName = "explode";
-      viewBtn.textContent = viewBtnName;
       let startRange;
       let endRange;
-      if (oldViewBtnName === "explode") {
-        startRange = 6;
-        endRange = 11;
-      } else {
+      if (currentViewName === "view-a") {
         startRange = 0;
         endRange = 5;
+      } else {
+        startRange = 6;
+        endRange = 11;
       }
-      DeactivateActivateSectionImage(oldViewBtnName, ctrlBtnIndex);
+      DeactivateActivateSectionImage(currentViewName, ctrlBtnIndex);
       DeactivateActivateSectionText("main");
       ctrlBtnWrapperComponents.querySelectorAll(".ctrl-btn").forEach(function(el2) {
         el2.classList.remove("active");
       });
-      DeactivateActivateCtrlBtnRange(true, "components", startRange, endRange);
+      DeactivateActivateCtrlBtnRange("components", startRange, endRange);
       ctrlBtnWrapperComponents.classList.add("active");
     });
   });
-  viewBtn.addEventListener("click", function(e) {
-    viewBtnName = viewBtn.textContent;
-    ctrlBtnIndex = "";
-    DeactivateActivateSectionText();
-    DeactivateActivateSectionImage();
-    ResetSectionVideos();
-    ActivateSectionVideo(viewBtnName);
-    PlaySectionVideo(viewBtnName);
-    ctrlBtnWrapperComponents.classList.remove("active");
+  optsMenuBtn.addEventListener("click", function() {
+    optsMenu.classList.add("active");
+  });
+  optsMenu.addEventListener("click", function(e) {
+    const clicked = e.target.closest(".opts-menu_link");
+    if (!clicked) return;
+    optsMenu.classList.remove("active");
+    if (currentViewName !== clicked.textContent) {
+      currentViewName = clicked.textContent;
+      optsMenuBtn.textContent = currentViewName;
+      ctrlBtnIndex = "";
+      DeactivateActivateSectionText();
+      DeactivateActivateSectionImage();
+      ResetSectionVideos();
+      ActivateSectionVideo(currentViewName);
+      PlaySectionVideo(currentViewName);
+      ctrlBtnWrapperComponents.classList.remove("active");
+    }
   });
   textImgBtn.addEventListener("click", function() {
     textImgBtnLabel === "image" ? textImgBtn.textContent = "text" : textImgBtn.textContent = "image";
@@ -338,10 +348,10 @@
     ctrlBtnWrapperComponents.classList.remove("active");
   });
   ctrlBtnWrapper.addEventListener("click", function(e) {
-    const clicked = e.target.closest(".ctrl-btn.datasheets");
+    const clicked = e.target.closest(".ctrl-btn.back");
     if (!clicked) return;
     ResetSectionVideos("components", "datasheets");
-    DeactivateActivateSectionImage(oldViewBtnName);
+    DeactivateActivateSectionImage(currentViewName);
     dimmer.classList.remove("active");
     ActivateDeactivateDatasheetTextAndButtons(false);
     DeactivateActivateSectionText("main");
@@ -364,7 +374,7 @@
         activeDatasheet = el;
       }
     });
-    datasheetBtn.classList.toggle("active", activeDeactivate);
+    backBtn.classList.toggle("active", activeDeactivate);
   };
   allVidsInstructions.forEach(function(el) {
     el.addEventListener("ended", function() {
