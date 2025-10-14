@@ -497,7 +497,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   );
   // currentInstructionVid =
   //   Array.from(allCtrlBtnsInstructions).indexOf(clicked) + 1; //why is this always '0'?
-  FlashBlackout(BLACKOUT_STANDARD);
+  FlashBlackout(BLACKOUT_EXTRA);
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
   ResetSectionVideos();
@@ -508,7 +508,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 });
 const ResetToInstructionsMainScreen = function () {
-  FlashBlackout(BLACKOUT_STANDARD);
+  FlashBlackout(BLACKOUT_EXTRA);
   DeactivateSectionVideos();
   DeactivateActivateSectionText("main");
   DeactivateActivateSectionImage("main");
