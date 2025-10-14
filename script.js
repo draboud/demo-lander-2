@@ -100,10 +100,10 @@ window.addEventListener("load", function () {
     initializing = false;
     loader.classList.remove("active");
     blackout.classList.add("off");
-    this.document
-      .querySelector(".section-wrap-btns.features")
-      .querySelectorAll(".ctrl-btn.features")[0]
-      .click();
+    // this.document
+    //   .querySelector(".section-wrap-btns.features")
+    //   .querySelectorAll(".ctrl-btn.features")[0]
+    //   .click();
   }, BLACKOUT_INIT);
 });
 //.......................................................................
@@ -143,8 +143,7 @@ const ActivateNavLink = function () {
 const ResetSectionSpecial = function () {
   switch (activeSectionName) {
     case "features":
-      DeactivateActivateSectionImage("main");
-      // ActivateSectionVideo("main");
+      ActivateSectionVideo("main");
       DeactivateActivateCurrentCtrlButtons("features");
       break;
     case "components":
@@ -350,9 +349,10 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
 const ResetToFeaturesMainScreen = function () {
   setTimeout(function () {
     FlashBlackout(BLACKOUT_STANDARD);
-    DeactivateActivateSectionImage("main");
-    DeactivateActivateSectionText();
+    DeactivateActivateSectionImage();
     DeactivateActivateSectionText("main");
+    ActivateSectionVideo("main");
+    PlaySectionVideo("main");
     DeactivateActivateCurrentCtrlButtons("features", false);
   }, PAUSE_AFTER_FEATURE_END);
 };
