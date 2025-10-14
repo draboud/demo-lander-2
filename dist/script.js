@@ -408,6 +408,7 @@
     );
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
+    ResetSectionVideos();
     ActivateSectionVideo("instructions", currentInstructionVid);
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();

@@ -500,7 +500,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   // FlashBlackout(BLACKOUT_EXTRA);
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
-  // ResetSectionVideos();
+  ResetSectionVideos();
   ActivateSectionVideo("instructions", currentInstructionVid);
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
