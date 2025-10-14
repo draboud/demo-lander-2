@@ -410,7 +410,6 @@
     instructionVidTimer = null;
     FlashBlackout(BLACKOUT_STANDARD);
     ActivateSectionVideo("instructions", currentInstructionVid);
-    ResetSectionVideos();
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
     PlaySectionVideo("instructions", currentInstructionVid);

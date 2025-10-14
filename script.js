@@ -3,7 +3,7 @@
 //.......................................................................
 //GLOBAL DEFINITIONS
 const BLACKOUT_STANDARD = 50;
-const BLACKOUT_EXTRA = 400;
+const BLACKOUT_EXTRA = 250;
 const BLACKOUT_INIT = 2500;
 const DELAY_BEFORE_FEATURE_TEXT = 1000;
 const PAUSE_AFTER_FEATURE_END = 650;
@@ -497,7 +497,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   instructionVidTimer = null;
   FlashBlackout(BLACKOUT_STANDARD);
   ActivateSectionVideo("instructions", currentInstructionVid);
-  ResetSectionVideos();
+  // ResetSectionVideos();
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
   PlaySectionVideo("instructions", currentInstructionVid);
