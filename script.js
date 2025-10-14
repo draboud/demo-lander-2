@@ -93,6 +93,9 @@ const init = function () {
 init();
 window.addEventListener("load", function () {
   navLinkInstructions.click();
+  allCtrlBtnsInstructions.forEach(function (el) {
+    el.click();
+  });
   navLinkComponents.click();
   navLinkFeatures.click();
   this.setTimeout(function () {
@@ -476,9 +479,7 @@ allVidsInstructions.forEach(function (el) {
         ResetToInstructionsMainScreen();
         return;
       }
-      // FlashBlackout(BLACKOUT_EXTRA);
       ActivateSectionVideo("instructions", currentInstructionVid);
-      // ResetSectionVideos();
       PlaySectionVideo("instructions", currentInstructionVid);
       DeactivateActivateCurrentCtrlButtons(
         "instructions",

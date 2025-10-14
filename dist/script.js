@@ -72,6 +72,9 @@
   init();
   window.addEventListener("load", function() {
     navLinkInstructions.click();
+    allCtrlBtnsInstructions.forEach(function(el) {
+      el.click();
+    });
     navLinkComponents.click();
     navLinkFeatures.click();
     this.setTimeout(function() {
