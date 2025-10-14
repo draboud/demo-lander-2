@@ -478,7 +478,7 @@ allVidsInstructions.forEach(function (el) {
       }
       FlashBlackout(BLACKOUT_EXTRA);
       ActivateSectionVideo("instructions", currentInstructionVid);
-      ResetSectionVideos();
+      // ResetSectionVideos();
       PlaySectionVideo("instructions", currentInstructionVid);
       DeactivateActivateCurrentCtrlButtons(
         "instructions",

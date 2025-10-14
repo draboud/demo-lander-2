@@ -391,7 +391,6 @@
         }
         FlashBlackout(BLACKOUT_EXTRA);
         ActivateSectionVideo("instructions", currentInstructionVid);
-        ResetSectionVideos();
         PlaySectionVideo("instructions", currentInstructionVid);
         DeactivateActivateCurrentCtrlButtons(
           "instructions",
