@@ -496,8 +496,8 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
   FlashBlackout(BLACKOUT_STANDARD);
-  ResetSectionVideos();
   ActivateSectionVideo("instructions", currentInstructionVid);
+  ResetSectionVideos();
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
   PlaySectionVideo("instructions", currentInstructionVid);
