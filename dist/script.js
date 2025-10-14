@@ -1,7 +1,7 @@
 (() => {
   // script.js
   var BLACKOUT_STANDARD = 50;
-  var BLACKOUT_EXTRA = 250;
+  var BLACKOUT_EXTRA = 600;
   var BLACKOUT_INIT = 2500;
   var DELAY_BEFORE_FEATURE_TEXT = 1e3;
   var PAUSE_AFTER_FEATURE_END = 650;
@@ -391,7 +391,7 @@
         }
         ActivateSectionVideo("instructions", currentInstructionVid);
         ResetSectionVideos();
-        FlashBlackout(BLACKOUT_STANDARD);
+        FlashBlackout(BLACKOUT_EXTRA);
         PlaySectionVideo("instructions", currentInstructionVid);
         DeactivateActivateCurrentCtrlButtons(
           "instructions",
@@ -412,6 +412,7 @@
     instructionVidTimer = null;
     FlashBlackout(BLACKOUT_EXTRA);
     ActivateSectionVideo("instructions", currentInstructionVid);
+    ResetSectionVideos();
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
     PlaySectionVideo("instructions", currentInstructionVid);
