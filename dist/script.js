@@ -80,8 +80,8 @@
       initializing = false;
       loader.classList.remove("active");
       blackout.classList.add("off");
-      this.document.querySelectorAll(".ctrl-btn.features")[0].click();
     }, BLACKOUT_INIT);
+    navLinkFeatures.click();
   });
   allCtrlBtns.forEach(function(el) {
     el.addEventListener("mouseenter", function() {

@@ -102,8 +102,8 @@ window.addEventListener("load", function () {
     initializing = false;
     loader.classList.remove("active");
     blackout.classList.add("off");
-    this.document.querySelectorAll(".ctrl-btn.features")[0].click();
   }, BLACKOUT_INIT);
+  navLinkFeatures.click();
 });
 //.......................................................................
 //.......................................................................
