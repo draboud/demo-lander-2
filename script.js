@@ -3,12 +3,12 @@
 //.......................................................................
 //GLOBAL DEFINITIONS
 const BLACKOUT_STANDARD = 50;
-const BLACKOUT_EXTRA = 600;
+const BLACKOUT_EXTRA = 150;
 const BLACKOUT_INIT = 2500;
 const DELAY_BEFORE_FEATURE_TEXT = 1000;
 const PAUSE_AFTER_FEATURE_END = 650;
 const NO_OF_INSTRUCTION_VIDS = 4;
-const PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
+const PAUSE_BETWEEN_INSTRUCTION_VIDS = 100;
 const INSTRUCTION_VIDS_LOOPING = true;
 const COMP_BTNS_START_RANGE_A = 0;
 const COMP_BTNS_END_RANGE_A = 5;
@@ -169,7 +169,7 @@ const ResetSectionSpecial = function () {
       break;
   }
 };
-const ResetSectionVideos = function (sectionName, subsectionName) {
+const ResetSectionVideos = function (sectionName, subsectionName, vidIndex) {
   if (sectionName === "all") {
     document.querySelectorAll(`.vid,.vid-mobile-p`).forEach(function (el) {
       el.currentTime = 0;
@@ -188,7 +188,10 @@ const ResetSectionVideos = function (sectionName, subsectionName) {
         el.currentTime = 0;
         el.pause();
       });
-  } else {
+  } else if (sectionName && subsectionName) {
+    // if (vidIndex || vidIndex === 0) {
+    //   document.querySelector(`.section_${sectionName}`).querySelector(`.section-wrap-vids.${subsectionName}`).querySelectorAll(`.vid`)[vidIndex].
+    // } else {
     document
       .querySelector(`.section_${sectionName}`)
       .querySelector(`.section-wrap-vids.${subsectionName}`)
@@ -197,6 +200,7 @@ const ResetSectionVideos = function (sectionName, subsectionName) {
         el.currentTime = 0;
         el.pause();
       });
+    // }
   }
 };
 const DeactivateActivateSectionText = function (textName, textIndex) {
@@ -472,9 +476,11 @@ allVidsInstructions.forEach(function (el) {
         ResetToInstructionsMainScreen();
         return;
       }
-      ActivateSectionVideo("instructions", currentInstructionVid);
-      ResetSectionVideos();
       FlashBlackout(BLACKOUT_EXTRA);
+      ActivateSectionVideo("instructions", currentInstructionVid);
+      el.classList.remove("active");
+      el.pause();
+      // ResetSectionVideos();
       PlaySectionVideo("instructions", currentInstructionVid);
       DeactivateActivateCurrentCtrlButtons(
         "instructions",
@@ -493,7 +499,6 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   );
   // currentInstructionVid =
   //   Array.from(allCtrlBtnsInstructions).indexOf(clicked) + 1; //why is this always '0'?
-  // FlashBlackout(BLACKOUT_EXTRA);
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
   FlashBlackout(BLACKOUT_EXTRA);
@@ -504,6 +509,7 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   PlaySectionVideo("instructions", currentInstructionVid);
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 });
+// const Reset
 const ResetToInstructionsMainScreen = function () {
   FlashBlackout(BLACKOUT_EXTRA);
   DeactivateSectionVideos();

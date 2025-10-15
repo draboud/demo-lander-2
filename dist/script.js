@@ -1,12 +1,12 @@
 (() => {
   // script.js
   var BLACKOUT_STANDARD = 50;
-  var BLACKOUT_EXTRA = 600;
+  var BLACKOUT_EXTRA = 150;
   var BLACKOUT_INIT = 2500;
   var DELAY_BEFORE_FEATURE_TEXT = 1e3;
   var PAUSE_AFTER_FEATURE_END = 650;
   var NO_OF_INSTRUCTION_VIDS = 4;
-  var PAUSE_BETWEEN_INSTRUCTION_VIDS = 1500;
+  var PAUSE_BETWEEN_INSTRUCTION_VIDS = 100;
   var INSTRUCTION_VIDS_LOOPING = true;
   var COMP_BTNS_START_RANGE_A = 0;
   var COMP_BTNS_END_RANGE_A = 5;
@@ -145,7 +145,7 @@
         break;
     }
   };
-  var ResetSectionVideos = function(sectionName, subsectionName) {
+  var ResetSectionVideos = function(sectionName, subsectionName, vidIndex) {
     if (sectionName === "all") {
       document.querySelectorAll(`.vid,.vid-mobile-p`).forEach(function(el) {
         el.currentTime = 0;
@@ -161,7 +161,7 @@
         el.currentTime = 0;
         el.pause();
       });
-    } else {
+    } else if (sectionName && subsectionName) {
       document.querySelector(`.section_${sectionName}`).querySelector(`.section-wrap-vids.${subsectionName}`).querySelectorAll(`.vid,.vid-mobile-p`).forEach(function(el) {
         el.currentTime = 0;
         el.pause();
@@ -389,9 +389,10 @@
           ResetToInstructionsMainScreen();
           return;
         }
-        ActivateSectionVideo("instructions", currentInstructionVid);
-        ResetSectionVideos();
         FlashBlackout(BLACKOUT_EXTRA);
+        ActivateSectionVideo("instructions", currentInstructionVid);
+        el.classList.remove("active");
+        el.pause();
         PlaySectionVideo("instructions", currentInstructionVid);
         DeactivateActivateCurrentCtrlButtons(
           "instructions",
