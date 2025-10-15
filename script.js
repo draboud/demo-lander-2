@@ -132,11 +132,12 @@ window.addEventListener("load", function () {
   }, BLACKOUT_INIT);
 
   // Finally go to features
-  navLinkFeatures.click();
+  // navLinkFeatures.click();
 });
 
 // GLOBAL EVENT BINDINGS
 allCtrlBtns.forEach((el) => {
+  navLinkFeatures.click();
   el.addEventListener("mouseenter", () => el.classList.add("hovered"));
   el.addEventListener("mouseleave", () => el.classList.remove("hovered"));
 });

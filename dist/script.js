@@ -97,9 +97,9 @@
       loader.classList.remove("active");
       blackout.classList.add("off");
     }, BLACKOUT_INIT);
-    navLinkFeatures.click();
   });
   allCtrlBtns.forEach((el) => {
+    navLinkFeatures.click();
     el.addEventListener("mouseenter", () => el.classList.add("hovered"));
     el.addEventListener("mouseleave", () => el.classList.remove("hovered"));
   });
