@@ -389,7 +389,6 @@
           ResetToInstructionsMainScreen();
           return;
         }
-        FlashBlackout(BLACKOUT_EXTRA);
         ActivateSectionVideo("instructions", currentInstructionVid);
         el.classList.remove("active");
         el.pause();
@@ -411,7 +410,7 @@
     );
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
-    FlashBlackout(BLACKOUT_EXTRA);
+    FlashBlackout(BLACKOUT_STANDARD);
     ActivateSectionVideo("instructions", currentInstructionVid);
     ResetSectionVideos();
     DeactivateActivateSectionText();
