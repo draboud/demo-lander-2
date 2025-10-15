@@ -74,13 +74,13 @@
     navLinkInstructions.click();
     navLinkComponents.click();
     navLinkFeatures.click();
-    this.document.querySelectorAll(".ctrl-btn.features")[0].click();
     this.setTimeout(function() {
       navBar.style.display = "block";
       ctrlBtnWrapper.classList.add("active");
       initializing = false;
       loader.classList.remove("active");
       blackout.classList.add("off");
+      this.document.querySelectorAll(".ctrl-btn.features")[0].click();
     }, BLACKOUT_INIT);
   });
   allCtrlBtns.forEach(function(el) {
