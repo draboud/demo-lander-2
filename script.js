@@ -33,7 +33,7 @@ const allSectionBtnWrappers = document.querySelectorAll(".section-wrap-btns");
 let initializing = true;
 let activeSection = document.querySelector(".section_features");
 let activeSectionName = activeSection.classList[0].slice(8);
-let ctrlBtnIndex;
+let ctrlBtnIndex = null;
 
 // FEATURES
 const allVidsFeatures = sectionFeatures.querySelectorAll(".vid");
@@ -69,7 +69,7 @@ const allCtrlBtnsComponents = ctrlBtnWrapper.querySelectorAll(
 const backBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.back");
 let currentViewName = "view-a";
 let textImgBtnLabel = "image";
-let activeDatasheet;
+let activeDatasheet = null;
 
 // INSTRUCTIONS
 const allVidsInstructions = sectionInstructions.querySelectorAll(".vid");
@@ -79,36 +79,49 @@ const allCtrlBtnsInstructions = sectionInstructions.querySelectorAll(
 let currentInstructionVid = 0;
 let instructionVidTimer = null;
 
-// Utility: detect iOS
-function isIOS() {
-  return (
-    /iP(hone|od|ad)/.test(navigator.platform) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  );
-}
+// ========== Utility functions ==========
 
-// Utility: safe play with check
+// Safely attempt to play a video (muted + playsinline) and fallback
 function safePlay(videoEl) {
   if (!videoEl) return Promise.resolve();
-  // Some iOS require muted to allow play
-  videoEl.muted = true;
-  videoEl.setAttribute("playsinline", "");
-  videoEl.setAttribute("webkit-playsinline", "");
-  // attempt play
+  try {
+    videoEl.muted = true;
+    videoEl.setAttribute("playsinline", "");
+    videoEl.setAttribute("webkit-playsinline", "");
+  } catch (err) {
+    console.warn("safePlay: error setting video attributes:", err);
+  }
   return videoEl.play().catch((err) => {
-    // fallback: try load then play
+    console.warn("safePlay: play() failed:", err);
     try {
       videoEl.load();
-      return videoEl.play().catch((e2) => {
-        console.warn("Video play failed:", e2);
+      return videoEl.play().catch((err2) => {
+        console.warn("safePlay: load+play failed:", err2);
       });
-    } catch (e3) {
-      console.warn("Video load+play failed:", e3);
+    } catch (err3) {
+      console.warn("safePlay: load failed:", err3);
     }
   });
 }
 
-// INITIALIZE
+// Autoplay the “main” feature video after load / blackout
+function autoplayMainFeatureVideo() {
+  const wrap = sectionFeatures.querySelector(".section-wrap-vids.main");
+  if (!wrap) return;
+  const videoWrap = wrap.querySelector(".video-wrap");
+  if (videoWrap) {
+    const vidEl = videoWrap.querySelector(".vid");
+    if (vidEl) safePlay(vidEl);
+  }
+  const mobileWrap = wrap.querySelector(".video-wrap.mobile-p");
+  if (mobileWrap) {
+    const vidEl2 = mobileWrap.querySelector(".vid-mobile-p");
+    if (vidEl2) safePlay(vidEl2);
+  }
+}
+
+// ========== Initialization ==========
+
 function init() {
   blackout.classList.remove("off");
   loader.classList.add("active");
@@ -118,7 +131,7 @@ function init() {
 init();
 
 window.addEventListener("load", function () {
-  // Trigger sequential navClicks (to force layout)
+  // Kick off nav clicks to prime state
   navLinkInstructions.click();
   navLinkComponents.click();
   navLinkFeatures.click();
@@ -131,18 +144,21 @@ window.addEventListener("load", function () {
     blackout.classList.add("off");
   }, BLACKOUT_INIT);
 
-  // Finally go to features
-  // navLinkFeatures.click();
+  // After that, go to features and autoplay main
+  setTimeout(() => {
+    navLinkFeatures.click();
+    autoplayMainFeatureVideo();
+  }, BLACKOUT_INIT + 50);
 });
 
-// GLOBAL EVENT BINDINGS
+// ========== Global event bindings ==========
+
 allCtrlBtns.forEach((el) => {
-  navLinkFeatures.click();
   el.addEventListener("mouseenter", () => el.classList.add("hovered"));
   el.addEventListener("mouseleave", () => el.classList.remove("hovered"));
 });
 
-// Use both click and touchstart for nav links (for iOS)
+// Nav links: click + touchstart
 allNavLinks.forEach((el) => {
   ["click", "touchstart"].forEach((evtName) => {
     el.addEventListener(evtName, function (e) {
@@ -158,7 +174,6 @@ allNavLinks.forEach((el) => {
       ActivateSection();
       ActivateSectionButtons();
       if (activeSectionName === "features") {
-        // play only after user-initiated event
         PlaySectionVideo("main");
       }
     });
@@ -168,7 +183,9 @@ allNavLinks.forEach((el) => {
 function ActivateNavLink() {
   allNavLinks.forEach((el) => {
     el.classList.remove("current");
-    if (el.classList.contains(activeSectionName)) el.classList.add("current");
+    if (el.classList.contains(activeSectionName)) {
+      el.classList.add("current");
+    }
   });
 }
 
@@ -181,9 +198,9 @@ function ResetSectionSpecial() {
     case "components":
       optsMenu.classList.remove("active");
       DeactivateActivateSectionImage(currentViewName);
-      [datasheetsAllWrapper, ...allDatasheetWraps].forEach((el) =>
-        el.classList.remove("active")
-      );
+      [datasheetsAllWrapper, ...allDatasheetWraps].forEach((el) => {
+        el.classList.remove("active");
+      });
       let startIndex, endIndex;
       if (currentViewName === "view-a") {
         startIndex = COMP_BTNS_START_RANGE_A;
@@ -209,25 +226,30 @@ function ResetSectionSpecial() {
 }
 
 function ResetSectionVideos(sectionName, subsectionName, vidIndex) {
-  const sel = (el) => {
-    el.currentTime = 0;
-    el.pause();
+  const resetOne = (el) => {
+    try {
+      el.currentTime = 0;
+      el.pause();
+    } catch (e) {
+      // ignore
+    }
   };
+
   if (sectionName === "all") {
-    document.querySelectorAll(`.vid,.vid-mobile-p`).forEach(sel);
+    document.querySelectorAll(".vid, .vid-mobile-p").forEach(resetOne);
   } else if (!sectionName) {
-    activeSection.querySelectorAll(`.vid,.vid-mobile-p`).forEach(sel);
+    activeSection.querySelectorAll(".vid, .vid-mobile-p").forEach(resetOne);
   } else if (sectionName && !subsectionName) {
     document
       .querySelector(`.section_${sectionName}`)
-      .querySelectorAll(`.vid,.vid-mobile-p`)
-      .forEach(sel);
+      .querySelectorAll(".vid, .vid-mobile-p")
+      .forEach(resetOne);
   } else if (sectionName && subsectionName) {
     document
       .querySelector(`.section_${sectionName}`)
       .querySelector(`.section-wrap-vids.${subsectionName}`)
-      .querySelectorAll(`.vid,.vid-mobile-p`)
-      .forEach(sel);
+      .querySelectorAll(".vid, .vid-mobile-p")
+      .forEach(resetOne);
   }
 }
 
@@ -251,7 +273,9 @@ function ActivateSection() {
   allSections.forEach((el) => {
     if (el.classList[0].slice(8) === activeSectionName) {
       el.classList.add("active");
-      if (!initializing) FlashBlackout(BLACKOUT_STANDARD);
+      if (!initializing) {
+        FlashBlackout(BLACKOUT_STANDARD);
+      }
     }
   });
 }
@@ -273,9 +297,9 @@ function FlashBlackout(timerVariable) {
 }
 
 function DeactivateActivateSectionImage(imgName, imgIndex) {
-  activeSection
-    .querySelectorAll(".section-wrap-imgs")
-    .forEach((el) => el.classList.remove("active"));
+  activeSection.querySelectorAll(".section-wrap-imgs").forEach((el) => {
+    el.classList.remove("active");
+  });
   if (imgName) {
     const wrap = activeSection.querySelector(`.section-wrap-imgs.${imgName}`);
     if (wrap) {
@@ -319,6 +343,7 @@ function ActivateSectionVideo(vidName, vidIndex) {
 }
 
 function PlaySectionVideo(vidName, vidIndex) {
+  if (vidName == null) vidName = "main";
   if (vidIndex == null) vidIndex = 0;
   const wrap = activeSection.querySelector(`.section-wrap-vids.${vidName}`);
   if (!wrap) return;
@@ -352,22 +377,24 @@ function DeactivateActivateCtrlBtnRange(btnsName, startIndex, endIndex) {
   });
 }
 
-// FEATURES SECTION
+// ========== FEATURES Section ==========
+
 allVidsFeatures.forEach((el) => {
   el.addEventListener("ended", () => {
     ResetToFeaturesMainScreen();
   });
 });
 
-ctrlBtnWrapper.addEventListener("click", eventHandlerFeatures);
-ctrlBtnWrapper.addEventListener("touchstart", eventHandlerFeatures);
+ctrlBtnWrapper.addEventListener("click", handleFeaturesCtrl);
+ctrlBtnWrapper.addEventListener("touchstart", handleFeaturesCtrl);
 
-function eventHandlerFeatures(e) {
+function handleFeaturesCtrl(e) {
   const clicked = e.target.closest(".ctrl-btn.features");
   if (!clicked) return;
   e.preventDefault();
   const parent = clicked.parentElement;
   ctrlBtnIndex = Array.prototype.indexOf.call(parent.children, clicked);
+
   FlashBlackout(BLACKOUT_STANDARD);
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
@@ -375,6 +402,7 @@ function eventHandlerFeatures(e) {
   ActivateSectionVideo("features", ctrlBtnIndex);
   PlaySectionVideo("features", ctrlBtnIndex);
   DeactivateActivateCurrentCtrlButtons("features", ctrlBtnIndex);
+
   setTimeout(() => {
     DeactivateActivateSectionText("feature", ctrlBtnIndex);
   }, DELAY_BEFORE_FEATURE_TEXT);
@@ -391,7 +419,8 @@ function ResetToFeaturesMainScreen() {
   }, PAUSE_AFTER_FEATURE_END);
 }
 
-// COMPONENTS SECTION
+// ========== COMPONENTS Section ==========
+
 allVidsComponentDatasheets.forEach((el) => {
   el.addEventListener("ended", () => {
     DisplayDataSheet();
@@ -422,7 +451,6 @@ optsMenuBtn.addEventListener("click", (e) => {
   e.preventDefault();
   optsMenu.classList.add("active");
 });
-
 optsMenu.addEventListener("click", (e) => {
   const clicked = e.target.closest(".opts-menu_link");
   if (!clicked) return;
@@ -445,21 +473,24 @@ textImgBtn.addEventListener("click", (e) => {
   e.preventDefault();
   textImgBtnLabel = textImgBtnLabel === "image" ? "text" : "image";
   textImgBtn.textContent = textImgBtnLabel;
-  activeDatasheet
-    .querySelector(".comp-data-body-wrap")
-    .classList.toggle("active");
+  if (activeDatasheet) {
+    activeDatasheet
+      .querySelector(".comp-data-body-wrap")
+      .classList.toggle("active");
+  }
   dimmer.classList.toggle("active");
 });
 
-ctrlBtnWrapper.addEventListener("click", eventHandlerComponents);
-ctrlBtnWrapper.addEventListener("touchstart", eventHandlerComponents);
+ctrlBtnWrapper.addEventListener("click", handleCompCtrl);
+ctrlBtnWrapper.addEventListener("touchstart", handleCompCtrl);
 
-function eventHandlerComponents(e) {
+function handleCompCtrl(e) {
   const clicked = e.target.closest(".ctrl-btn.components");
   if (!clicked) return;
   e.preventDefault();
   const parentEl = clicked.parentElement;
   ctrlBtnIndex = Array.prototype.indexOf.call(parentEl.children, clicked);
+
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
   ResetSectionVideos();
@@ -501,7 +532,8 @@ function ActivateDeactivateDatasheetTextAndButtons(activeDeactivate) {
   backBtn.classList.toggle("active", activeDeactivate);
 }
 
-// INSTRUCTIONS SECTION
+// ========== INSTRUCTIONS Section ==========
+
 allVidsInstructions.forEach((el) => {
   el.addEventListener("ended", () => {
     instructionVidTimer = setTimeout(() => {
@@ -527,31 +559,35 @@ allVidsInstructions.forEach((el) => {
   });
 });
 
-ctrlBtnWrapper.addEventListener("click", eventHandlerInstructions);
-ctrlBtnWrapper.addEventListener("touchstart", eventHandlerInstructions);
+ctrlBtnWrapper.addEventListener("click", handleInstrCtrl);
+ctrlBtnWrapper.addEventListener("touchstart", handleInstrCtrl);
 
-function eventHandlerInstructions(e) {
+function handleInstrCtrl(e) {
   const clicked = e.target.closest(".ctrl-btn.instructions");
   if (!clicked) return;
   e.preventDefault();
+
   const parentEl = clicked.parentElement;
   currentInstructionVid = Array.prototype.indexOf.call(
     parentEl.children,
     clicked
   );
+
   if (instructionVidTimer) {
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
   }
-  // For iOS, flash blackout lightly
+
   blackout.classList.remove("off");
   ActivateSectionVideo("instructions", currentInstructionVid);
   ResetSectionVideos();
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
+
   setTimeout(() => {
     blackout.classList.add("off");
   }, 20);
+
   PlaySectionVideo("instructions", currentInstructionVid);
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 }

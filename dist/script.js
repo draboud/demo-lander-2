@@ -31,7 +31,7 @@
   var initializing = true;
   var activeSection = document.querySelector(".section_features");
   var activeSectionName = activeSection.classList[0].slice(8);
-  var ctrlBtnIndex;
+  var ctrlBtnIndex = null;
   var allVidsFeatures = sectionFeatures.querySelectorAll(".vid");
   var allCtrlBtnsFeatures = ctrlBtnWrapper.querySelectorAll(".ctrl-btn.features");
   var allVidsComponentViews = [
@@ -56,7 +56,7 @@
   var backBtn = ctrlBtnWrapper.querySelector(".ctrl-btn.back");
   var currentViewName = "view-a";
   var textImgBtnLabel = "image";
-  var activeDatasheet;
+  var activeDatasheet = null;
   var allVidsInstructions = sectionInstructions.querySelectorAll(".vid");
   var allCtrlBtnsInstructions = sectionInstructions.querySelectorAll(
     ".ctrl-btn.instructions"
@@ -65,19 +65,38 @@
   var instructionVidTimer = null;
   function safePlay(videoEl) {
     if (!videoEl) return Promise.resolve();
-    videoEl.muted = true;
-    videoEl.setAttribute("playsinline", "");
-    videoEl.setAttribute("webkit-playsinline", "");
+    try {
+      videoEl.muted = true;
+      videoEl.setAttribute("playsinline", "");
+      videoEl.setAttribute("webkit-playsinline", "");
+    } catch (err) {
+      console.warn("safePlay: error setting video attributes:", err);
+    }
     return videoEl.play().catch((err) => {
+      console.warn("safePlay: play() failed:", err);
       try {
         videoEl.load();
-        return videoEl.play().catch((e2) => {
-          console.warn("Video play failed:", e2);
+        return videoEl.play().catch((err2) => {
+          console.warn("safePlay: load+play failed:", err2);
         });
-      } catch (e3) {
-        console.warn("Video load+play failed:", e3);
+      } catch (err3) {
+        console.warn("safePlay: load failed:", err3);
       }
     });
+  }
+  function autoplayMainFeatureVideo() {
+    const wrap = sectionFeatures.querySelector(".section-wrap-vids.main");
+    if (!wrap) return;
+    const videoWrap = wrap.querySelector(".video-wrap");
+    if (videoWrap) {
+      const vidEl = videoWrap.querySelector(".vid");
+      if (vidEl) safePlay(vidEl);
+    }
+    const mobileWrap = wrap.querySelector(".video-wrap.mobile-p");
+    if (mobileWrap) {
+      const vidEl2 = mobileWrap.querySelector(".vid-mobile-p");
+      if (vidEl2) safePlay(vidEl2);
+    }
   }
   function init() {
     blackout.classList.remove("off");
@@ -97,9 +116,12 @@
       loader.classList.remove("active");
       blackout.classList.add("off");
     }, BLACKOUT_INIT);
+    setTimeout(() => {
+      navLinkFeatures.click();
+      autoplayMainFeatureVideo();
+    }, BLACKOUT_INIT + 50);
   });
   allCtrlBtns.forEach((el) => {
-    navLinkFeatures.click();
     el.addEventListener("mouseenter", () => el.classList.add("hovered"));
     el.addEventListener("mouseleave", () => el.classList.remove("hovered"));
   });
@@ -126,7 +148,9 @@
   function ActivateNavLink() {
     allNavLinks.forEach((el) => {
       el.classList.remove("current");
-      if (el.classList.contains(activeSectionName)) el.classList.add("current");
+      if (el.classList.contains(activeSectionName)) {
+        el.classList.add("current");
+      }
     });
   }
   function ResetSectionSpecial() {
@@ -138,9 +162,9 @@
       case "components":
         optsMenu.classList.remove("active");
         DeactivateActivateSectionImage(currentViewName);
-        [datasheetsAllWrapper, ...allDatasheetWraps].forEach(
-          (el) => el.classList.remove("active")
-        );
+        [datasheetsAllWrapper, ...allDatasheetWraps].forEach((el) => {
+          el.classList.remove("active");
+        });
         let startIndex, endIndex;
         if (currentViewName === "view-a") {
           startIndex = COMP_BTNS_START_RANGE_A;
@@ -165,18 +189,21 @@
     }
   }
   function ResetSectionVideos(sectionName, subsectionName, vidIndex) {
-    const sel = (el) => {
-      el.currentTime = 0;
-      el.pause();
+    const resetOne = (el) => {
+      try {
+        el.currentTime = 0;
+        el.pause();
+      } catch (e) {
+      }
     };
     if (sectionName === "all") {
-      document.querySelectorAll(`.vid,.vid-mobile-p`).forEach(sel);
+      document.querySelectorAll(".vid, .vid-mobile-p").forEach(resetOne);
     } else if (!sectionName) {
-      activeSection.querySelectorAll(`.vid,.vid-mobile-p`).forEach(sel);
+      activeSection.querySelectorAll(".vid, .vid-mobile-p").forEach(resetOne);
     } else if (sectionName && !subsectionName) {
-      document.querySelector(`.section_${sectionName}`).querySelectorAll(`.vid,.vid-mobile-p`).forEach(sel);
+      document.querySelector(`.section_${sectionName}`).querySelectorAll(".vid, .vid-mobile-p").forEach(resetOne);
     } else if (sectionName && subsectionName) {
-      document.querySelector(`.section_${sectionName}`).querySelector(`.section-wrap-vids.${subsectionName}`).querySelectorAll(`.vid,.vid-mobile-p`).forEach(sel);
+      document.querySelector(`.section_${sectionName}`).querySelector(`.section-wrap-vids.${subsectionName}`).querySelectorAll(".vid, .vid-mobile-p").forEach(resetOne);
     }
   }
   function DeactivateActivateSectionText(textName, textIndex) {
@@ -198,7 +225,9 @@
     allSections.forEach((el) => {
       if (el.classList[0].slice(8) === activeSectionName) {
         el.classList.add("active");
-        if (!initializing) FlashBlackout(BLACKOUT_STANDARD);
+        if (!initializing) {
+          FlashBlackout(BLACKOUT_STANDARD);
+        }
       }
     });
   }
@@ -217,7 +246,9 @@
     }, timerVariable);
   }
   function DeactivateActivateSectionImage(imgName, imgIndex) {
-    activeSection.querySelectorAll(".section-wrap-imgs").forEach((el) => el.classList.remove("active"));
+    activeSection.querySelectorAll(".section-wrap-imgs").forEach((el) => {
+      el.classList.remove("active");
+    });
     if (imgName) {
       const wrap = activeSection.querySelector(`.section-wrap-imgs.${imgName}`);
       if (wrap) {
@@ -253,6 +284,7 @@
     if (velsMobile[vidIndex]) velsMobile[vidIndex].classList.add("active");
   }
   function PlaySectionVideo(vidName, vidIndex) {
+    if (vidName == null) vidName = "main";
     if (vidIndex == null) vidIndex = 0;
     const wrap = activeSection.querySelector(`.section-wrap-vids.${vidName}`);
     if (!wrap) return;
@@ -288,9 +320,9 @@
       ResetToFeaturesMainScreen();
     });
   });
-  ctrlBtnWrapper.addEventListener("click", eventHandlerFeatures);
-  ctrlBtnWrapper.addEventListener("touchstart", eventHandlerFeatures);
-  function eventHandlerFeatures(e) {
+  ctrlBtnWrapper.addEventListener("click", handleFeaturesCtrl);
+  ctrlBtnWrapper.addEventListener("touchstart", handleFeaturesCtrl);
+  function handleFeaturesCtrl(e) {
     const clicked = e.target.closest(".ctrl-btn.features");
     if (!clicked) return;
     e.preventDefault();
@@ -364,12 +396,14 @@
     e.preventDefault();
     textImgBtnLabel = textImgBtnLabel === "image" ? "text" : "image";
     textImgBtn.textContent = textImgBtnLabel;
-    activeDatasheet.querySelector(".comp-data-body-wrap").classList.toggle("active");
+    if (activeDatasheet) {
+      activeDatasheet.querySelector(".comp-data-body-wrap").classList.toggle("active");
+    }
     dimmer.classList.toggle("active");
   });
-  ctrlBtnWrapper.addEventListener("click", eventHandlerComponents);
-  ctrlBtnWrapper.addEventListener("touchstart", eventHandlerComponents);
-  function eventHandlerComponents(e) {
+  ctrlBtnWrapper.addEventListener("click", handleCompCtrl);
+  ctrlBtnWrapper.addEventListener("touchstart", handleCompCtrl);
+  function handleCompCtrl(e) {
     const clicked = e.target.closest(".ctrl-btn.components");
     if (!clicked) return;
     e.preventDefault();
@@ -436,9 +470,9 @@
       }, PAUSE_BETWEEN_INSTRUCTION_VIDS);
     });
   });
-  ctrlBtnWrapper.addEventListener("click", eventHandlerInstructions);
-  ctrlBtnWrapper.addEventListener("touchstart", eventHandlerInstructions);
-  function eventHandlerInstructions(e) {
+  ctrlBtnWrapper.addEventListener("click", handleInstrCtrl);
+  ctrlBtnWrapper.addEventListener("touchstart", handleInstrCtrl);
+  function handleInstrCtrl(e) {
     const clicked = e.target.closest(".ctrl-btn.instructions");
     if (!clicked) return;
     e.preventDefault();
