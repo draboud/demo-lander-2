@@ -1,4 +1,3 @@
-// console.log("TEST");
 //.......................................................................
 //.......................................................................
 //GLOBAL DEFINITIONS
@@ -189,9 +188,6 @@ const ResetSectionVideos = function (sectionName, subsectionName, vidIndex) {
         el.pause();
       });
   } else if (sectionName && subsectionName) {
-    // if (vidIndex || vidIndex === 0) {
-    //   document.querySelector(`.section_${sectionName}`).querySelector(`.section-wrap-vids.${subsectionName}`).querySelectorAll(`.vid`)[vidIndex].
-    // } else {
     document
       .querySelector(`.section_${sectionName}`)
       .querySelector(`.section-wrap-vids.${subsectionName}`)
@@ -496,8 +492,6 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
     parentElement.children,
     clicked
   );
-  // currentInstructionVid =
-  //   Array.from(allCtrlBtnsInstructions).indexOf(clicked) + 1; //why is this always '0'?
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
   FlashBlackout(BLACKOUT_STANDARD);
@@ -508,7 +502,6 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   PlaySectionVideo("instructions", currentInstructionVid);
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 });
-// const Reset
 const ResetToInstructionsMainScreen = function () {
   FlashBlackout(BLACKOUT_EXTRA);
   DeactivateSectionVideos();
