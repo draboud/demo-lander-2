@@ -94,7 +94,8 @@ window.addEventListener("load", function () {
   navLinkInstructions.click();
   navLinkComponents.click();
   navLinkFeatures.click();
-  allCtrlBtnsFeatures[0].click();
+  // allCtrlBtnsFeatures[0].click();
+  this.document.querySelectorAll(".ctrl-btn.features")[0].click();
   this.setTimeout(function () {
     navBar.style.display = "block";
     ctrlBtnWrapper.classList.add("active");
