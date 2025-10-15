@@ -72,8 +72,8 @@
   init();
   window.addEventListener("load", function() {
     navLinkInstructions.click();
-    allCtrlBtnsFeatures[0].click();
     navLinkComponents.click();
+    navLinkFeatures.click();
     navLinkFeatures.click();
     this.setTimeout(function() {
       navBar.style.display = "block";
