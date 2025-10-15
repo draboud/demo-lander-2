@@ -411,11 +411,14 @@
     );
     clearTimeout(instructionVidTimer);
     instructionVidTimer = null;
-    FlashBlackout(BLACKOUT_STANDARD);
+    blackout.classList.remove("off");
     ActivateSectionVideo("instructions", currentInstructionVid);
     ResetSectionVideos();
     DeactivateActivateSectionText();
     DeactivateActivateSectionImage();
+    setTimeout(function() {
+      blackout.classList.add("off");
+    }, 20);
     PlaySectionVideo("instructions", currentInstructionVid);
     DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
   });

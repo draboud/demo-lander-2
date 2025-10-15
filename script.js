@@ -494,11 +494,17 @@ ctrlBtnWrapper.addEventListener("click", function (e) {
   );
   clearTimeout(instructionVidTimer);
   instructionVidTimer = null;
-  FlashBlackout(BLACKOUT_STANDARD);
+  // FlashBlackout(BLACKOUT_STANDARD);
+  // allVidsInstructions[0].classList.remove("active");
+  // allVidsInstructions[0].pause();
+  blackout.classList.remove("off");
   ActivateSectionVideo("instructions", currentInstructionVid);
   ResetSectionVideos();
   DeactivateActivateSectionText();
   DeactivateActivateSectionImage();
+  setTimeout(function () {
+    blackout.classList.add("off");
+  }, 20);
   PlaySectionVideo("instructions", currentInstructionVid);
   DeactivateActivateCurrentCtrlButtons("instructions", currentInstructionVid);
 });
