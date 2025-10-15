@@ -389,6 +389,7 @@
           ResetToInstructionsMainScreen();
           return;
         }
+        FlashBlackout(BLACKOUT_STANDARD);
         ActivateSectionVideo("instructions", currentInstructionVid);
         el.classList.remove("active");
         el.pause();
