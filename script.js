@@ -146,7 +146,7 @@ window.addEventListener("load", function () {
 
   // After that, go to features and autoplay main
   setTimeout(() => {
-    navLinkFeatures.click();
+    // navLinkFeatures.click();
     autoplayMainFeatureVideo();
   }, BLACKOUT_INIT + 50);
 });

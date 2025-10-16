@@ -117,7 +117,6 @@
       blackout.classList.add("off");
     }, BLACKOUT_INIT);
     setTimeout(() => {
-      navLinkFeatures.click();
       autoplayMainFeatureVideo();
     }, BLACKOUT_INIT + 50);
   });
