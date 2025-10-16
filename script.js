@@ -81,7 +81,6 @@ let instructionVidTimer = null;
 
 // ========== Utility functions ==========
 
-// Safely attempt to play a video (muted + playsinline) and fallback
 function safePlay(videoEl) {
   if (!videoEl) return Promise.resolve();
   try {
@@ -89,7 +88,7 @@ function safePlay(videoEl) {
     videoEl.setAttribute("playsinline", "");
     videoEl.setAttribute("webkit-playsinline", "");
   } catch (err) {
-    console.warn("safePlay: error setting video attributes:", err);
+    console.warn("safePlay: setting video attributes failed:", err);
   }
   return videoEl.play().catch((err) => {
     console.warn("safePlay: play() failed:", err);
@@ -104,7 +103,6 @@ function safePlay(videoEl) {
   });
 }
 
-// Autoplay the “main” feature video after load / blackout
 function autoplayMainFeatureVideo() {
   const wrap = sectionFeatures.querySelector(".section-wrap-vids.main");
   if (!wrap) return;
@@ -120,6 +118,13 @@ function autoplayMainFeatureVideo() {
   }
 }
 
+function FlashBlackout(timerVariable) {
+  blackout.classList.remove("off");
+  setTimeout(() => {
+    blackout.classList.add("off");
+  }, timerVariable);
+}
+
 // ========== Initialization ==========
 
 function init() {
@@ -131,7 +136,6 @@ function init() {
 init();
 
 window.addEventListener("load", function () {
-  // Kick off nav clicks to prime state
   navLinkInstructions.click();
   navLinkComponents.click();
   navLinkFeatures.click();
@@ -144,9 +148,8 @@ window.addEventListener("load", function () {
     blackout.classList.add("off");
   }, BLACKOUT_INIT);
 
-  // After that, go to features and autoplay main
   setTimeout(() => {
-    // navLinkFeatures.click();
+    navLinkFeatures.click();
     autoplayMainFeatureVideo();
   }, BLACKOUT_INIT + 50);
 });
@@ -158,7 +161,6 @@ allCtrlBtns.forEach((el) => {
   el.addEventListener("mouseleave", () => el.classList.remove("hovered"));
 });
 
-// Nav links: click + touchstart
 allNavLinks.forEach((el) => {
   ["click", "touchstart"].forEach((evtName) => {
     el.addEventListener(evtName, function (e) {
@@ -287,13 +289,6 @@ function ActivateSectionButtons() {
   );
   if (wrap) wrap.classList.add("active");
   backBtn.classList.remove("active");
-}
-
-function FlashBlackout(timerVariable) {
-  blackout.classList.remove("off");
-  setTimeout(() => {
-    blackout.classList.add("off");
-  }, timerVariable);
 }
 
 function DeactivateActivateSectionImage(imgName, imgIndex) {

@@ -70,7 +70,7 @@
       videoEl.setAttribute("playsinline", "");
       videoEl.setAttribute("webkit-playsinline", "");
     } catch (err) {
-      console.warn("safePlay: error setting video attributes:", err);
+      console.warn("safePlay: setting video attributes failed:", err);
     }
     return videoEl.play().catch((err) => {
       console.warn("safePlay: play() failed:", err);
@@ -98,6 +98,12 @@
       if (vidEl2) safePlay(vidEl2);
     }
   }
+  function FlashBlackout(timerVariable) {
+    blackout.classList.remove("off");
+    setTimeout(() => {
+      blackout.classList.add("off");
+    }, timerVariable);
+  }
   function init() {
     blackout.classList.remove("off");
     loader.classList.add("active");
@@ -117,6 +123,7 @@
       blackout.classList.add("off");
     }, BLACKOUT_INIT);
     setTimeout(() => {
+      navLinkFeatures.click();
       autoplayMainFeatureVideo();
     }, BLACKOUT_INIT + 50);
   });
@@ -237,12 +244,6 @@
     );
     if (wrap) wrap.classList.add("active");
     backBtn.classList.remove("active");
-  }
-  function FlashBlackout(timerVariable) {
-    blackout.classList.remove("off");
-    setTimeout(() => {
-      blackout.classList.add("off");
-    }, timerVariable);
   }
   function DeactivateActivateSectionImage(imgName, imgIndex) {
     activeSection.querySelectorAll(".section-wrap-imgs").forEach((el) => {
